@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: portal_belajar_app
+        restart: unless-stopped
+        working_dir: /app/portal_belajar-web
+        volumes:
+            - ./:/app/portal_belajar-web
+            - ./storage:/app/portal_belajar-web/storage
+        networks:
+            - portal_belajar_network
+        depends_on:
+            - db
+        environment:
+            - DB_HOST=db
+            - DB_DATABASE=portal_belajar
+            - DB_USERNAME=root
+            - DB_PASSWORD=password
+
+    webserver:
+        image: nginx:alpine
+        container_name: portal_belajar_webserver
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        volumes:
+            - ./:/app/portal_belajar-web
+            - ./docker/nginx:/etc/nginx/conf.d
+        networks:
+            - portal_belajar_network
+        depends_on:
+            - app
+
+    db:
+        image: mysql:8.0
+        container_name: portal_belajar_db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: portal_belajar
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_PASSWORD: password
+            MYSQL_USER: laravel
+        volumes:
+            - dbdata:/var/lib/mysql
+        ports:
+            - "3307:3306"
+        networks:
+            - portal_belajar_network
+
+volumes:
+    dbdata:
+        driver: local
+
+networks:
+    portal_belajar_network:
+        driver: bridge
