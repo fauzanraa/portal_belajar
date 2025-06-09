@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+
+@plugin "flowbite/plugin";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source "../../node_modules/flowbite";
+@source "../node_modules/flowbite-datepicker";
+
+@theme {
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+
+    --font-fira: "Fira Sans", sans-serif;
+}
+
+.sidebar-menu {
+    @apply p-2.5 mt-3 mb-4 flex items-center rounded-md px-4  duration-300 cursor-pointer text-sky-500 hover:bg-sky-500;
+}
+
+/* .sidebar-menu-title {
+    @apply text-[18px] ml-5 text-sky-500;
+} */
+
+.home-card-admin {
+    @apply p-5 px-8 rounded-2xl bg-white cursor-pointer hover:bg-sky-500 hover:scale-98 duration-200;
+}
