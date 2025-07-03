@@ -17,9 +17,8 @@ class ManageUserController extends Controller
 {
     public function index(){
         $data_user = UserSystem::with('userable')->get();   
-        $data_sekolah = School::all();
 
-        return view('admin.manage-users.index', compact('data_user', 'data_sekolah'));
+        return view('admin.manage-users.index', compact('data_user'));
     }
 
     public function sync(Request $request){

@@ -68,14 +68,18 @@ Route::prefix('teacher')->middleware('role:guru')->group(function () {
     Route::get('/session-materials/{id}', [ManageMaterialSessionController::class, 'index'])->name('session-materials');
     Route::post('/session-materials/{id}/store', [ManageMaterialSessionController::class, 'store'])->name('store-sessions');
     Route::get('/manage-tasks/{id}', [ManageTaskController::class, 'index'])->name('detail-tasks');
+    Route::put('/manage-tasks/{id}/update', [ManageTaskController::class, 'update'])->name('update-tasks');
     Route::get('/manage-tasks/{id}/question', [ManageTaskController::class, 'question'])->name('question-tasks');
     Route::post('/manage-tasks/{id}/store-question', [ManageTaskController::class, 'storeQuestion'])->name('store-questions');
+    Route::post('/manage-tasks/{id}/update-components', [ManageTaskController::class, 'updateComponentSettings'])->name('update-components');
     Route::get('/manage-tasks/{id}/draw-answer', [ManageAnswerController::class, 'index'])->name('draw-correct-answer');
     Route::post('/manage-tasks/{id}/draw-answer/store', [ManageAnswerController::class, 'store'])->name('store-correct-answer');
     Route::get('/manage-tasks/{id}/draw-answer/edit', [ManageAnswerController::class, 'editAnswer'])->name('edit-correct-answer');
     Route::get('/task-materials/{id}', [ManageTaskSessionController::class, 'index'])->name('session-tasks');
     Route::post('/session-task/{id}/store', [ManageTaskSessionController::class, 'store'])->name('store-sessions');
     Route::get('/manage-scores', [ManageScoreController::class, 'index'])->name('manage-scores');
+    Route::get('/manage-scores/{idStudent}/{idTask}', [ManageScoreController::class, 'detail'])->name('detail-scores');
+    Route::get('/manage-scores/detail-modal/{idStudent}/{idTask}/{idMeeting}', [ManageScoreController::class, 'getStudentModalData'])->name('modal-scores');
 });
 
 // siswa
@@ -86,5 +90,6 @@ Route::prefix('student')->middleware('role:siswa')->group(function () {
     Route::get('/meetings/{idTeacher}/{idMeeting}', [StudentMeetingController::class, 'detailMeeting'])->name('detail-meetings');
     Route::get('/draw/{idTask}', [StudentAnswerController::class, 'index'])->name('draw-flowchart');
     Route::post('/draw/{idTask}/store', [StudentAnswerController::class, 'store'])->name('store-flowchart');
+    Route::get('/summary/{idTask}', [StudentAnswerController::class, 'summary'])->name('summary');
     Route::get('/scores', [StudentScoreController::class, 'index'])->name('list-scores');
 });
