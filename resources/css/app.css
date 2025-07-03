@@ -29,3 +29,7 @@
 .home-card-admin {
     @apply p-5 px-8 rounded-2xl bg-white cursor-pointer hover:bg-sky-500 hover:scale-98 duration-200;
 }
+
+.button-disabled {
+    @apply bg-slate-300 cursor-not-allowed hover:bg-none;
+}

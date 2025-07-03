@@ -38,11 +38,13 @@
                                 <div class="flex-1 mr-6">
                                     <div class="grid grid-cols-2 gap-3 mb-4">
                                         <div class="text-center p-2 bg-blue-50 rounded-lg">
-                                            <div class="text-sm font-bold text-blue-600">0</div>
+                                            <div class="text-sm font-bold text-blue-600">{{ isset($materialSession[$session->id]) ? $materialSession[$session->id]->count() : 0 }}</div>
+                                            {{-- @foreach ($materialSession[$session->id] ?? [] as $material)
+                                            @endforeach --}}
                                             <div class="text-xs text-blue-500">Materi</div>
                                         </div>
                                         <div class="text-center p-2 bg-green-50 rounded-lg">
-                                            <div class="text-sm font-bold text-green-600">0</div>
+                                            <div class="text-sm font-bold text-green-600">{{ isset($taskSession[$session->id]) ? $taskSession[$session->id]->count() : 0 }}</div>
                                             <div class="text-xs text-green-500">Tugas</div>
                                         </div>
                                     </div>
@@ -65,13 +67,21 @@
                                     <div class="mb-6">
                                         <div class="flex items-center justify-between mb-2">
                                             <span class="text-sm font-medium text-gray-700">Progress Pengerjaan</span>
-                                            <span class="text-sm font-bold text-sky-600">0%</span>
+                                            <span class="text-sm font-bold text-sky-600">{{ $progressMeeting[$session->id] ?? 0 }}%</span>
                                         </div>
+                                        @php
+                                            $progress = $progressMeeting[$session->id] ?? 0;
+
+                                            if ($progress >= 50) {
+                                                $colorClass = 'sky';
+                                                $gradientClass = 'blue';
+                                            } else {
+                                                $colorClass = 'red';
+                                                $gradientClass = 'orange';
+                                            }
+                                        @endphp
                                         <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                            <div class="bg-gradient-to-r from-sky-500 to-blue-600 h-2.5 rounded-full transition-all duration-500" style="width: 65%"></div>
-                                        </div>
-                                        <div class="flex justify-self-end text-xs text-gray-500 mt-1">
-                                            <span>0 Tugas selesai</span>
+                                            <div class="bg-gradient-to-r from-{{ $colorClass }}-500 to-{{ $gradientClass }}-600 h-2.5 rounded-full transition-all duration-500" style="width: {{$progressMeeting[$session->id ?? 0]}}%"></div>
                                         </div>
                                     </div>
 

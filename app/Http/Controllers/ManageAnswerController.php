@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ComponentSetting;
 use App\Models\TaskQuestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 
 class ManageAnswerController extends Controller
 {
@@ -13,19 +15,23 @@ class ManageAnswerController extends Controller
         $data_soal = TaskQuestion::find($decryptedId);
         $encryptedTask = Crypt::encrypt($data_soal->task_session_id);
         $encryptedQuestion = Crypt::encrypt($data_soal->id);
+        $pengaturanKomponen = ComponentSetting::where('task_session_id', $data_soal->task_session_id)
+            ->where('is_enabled', true)
+            ->pluck('component_name');
 
-        return view('guru.manage-meetings.draw', compact('data_soal', 'encryptedTask', 'encryptedQuestion'));
+        return view('guru.manage-meetings.draw', compact('data_soal', 'encryptedTask', 'encryptedQuestion', 'pengaturanKomponen'));
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         try {
             $request->validate([
                 'soal_id' => 'required|integer',
-                'flowchart_data' => 'required|string'
+                'flowchart_data' => 'required|string',
+                'flowchart_image' => 'required|string',
+                'encrypted_task' => 'required|string'
             ]);
 
-            // Validasi JSON
+            // Validasi JSON flowchart data
             $decoded = json_decode($request->flowchart_data, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return response()->json([
@@ -34,7 +40,7 @@ class ManageAnswerController extends Controller
                 ], 400);
             }
 
-            // Simpan ke database
+            // Cari soal
             $question = TaskQuestion::find($request->soal_id);
             
             if (!$question) {
@@ -44,7 +50,51 @@ class ManageAnswerController extends Controller
                 ], 404);
             }
 
-            $question->correct_answer = $request->flowchart_data;
+            $imageFileName = null;
+            if ($request->flowchart_image) {
+                try {
+                    $imageData = $request->flowchart_image;
+                    if (strpos($imageData, 'data:image') === 0) {
+                        $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $imageData);
+                    }
+                    
+                    $decodedImage = base64_decode($imageData);
+                    
+                    if ($decodedImage === false) {
+                        throw new \Exception('Invalid base64 image data');
+                    }
+                    
+                    $imageFileName = 'imgAnswer' . $request->soal_id . '_' . time() . '.png';
+                    
+                    // Buat direktori jika belum ada
+                    // if (!Storage::disk('public')->exists('flowcharts')) {
+                    //     Storage::disk('public')->makeDirectory('flowcharts');
+                    // }
+                    
+                    // Hapus gambar lama jika ada
+                    if ($question->flowchart_img && Storage::disk('public')->exists('assets/flowcharts/keyAnswers/' . $question->flowchart_img)) {
+                        Storage::disk('public')->delete('assets/flowcharts/keyAnswers/' . $question->flowchart_img);
+                    }
+                    
+                    // Simpan gambar baru
+                    $saved = Storage::disk('public')->put('assets/flowcharts/keyAnswers/' . $imageFileName, $decodedImage);
+                    
+                    if (!$saved) {
+                        throw new \Exception('Failed to save image file');
+                    }
+                    
+                } catch (\Exception $e) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Gagal menyimpan gambar: ' . $e->getMessage()
+                    ], 500);
+                }
+            }
+
+            $question->correct_answer = $request->flowchart_data; 
+            if ($imageFileName) {
+                $question->flowchart_img = $imageFileName; 
+            }
             $question->save();
 
             return response()->json([
@@ -52,7 +102,10 @@ class ManageAnswerController extends Controller
                 'message' => 'Flowchart berhasil disimpan',
                 'data' => [
                     'soal_id' => $request->soal_id,
-                    'saved_at' => now()->format('Y-m-d H:i:s')
+                    'flowchart_data_saved' => true, 
+                    'flowchart_image_saved' => $imageFileName ? true : false, 
+                    'saved_at' => now()->format('Y-m-d H:i:s'),
+                    'image_url' => $imageFileName ? Storage::url('assets/flowcharts/keyAnswers/' . $imageFileName) : null
                 ]
             ]);
 
@@ -64,15 +117,10 @@ class ManageAnswerController extends Controller
             ], 422);
 
         } catch (\Exception $e) {
-            // Log::error('Error saving flowchart', [
-            //     'error' => $e->getMessage(),
-            //     'soal_id' => $request->soal_id ?? null
-            // ]);
-
-            // return response()->json([
-            //     'success' => false,
-            //     'message' => 'Terjadi kesalahan saat menyimpan'
-            // ], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan flowchart'
+            ], 500);
         }
     }
 
@@ -100,5 +148,4 @@ class ManageAnswerController extends Controller
         
         return view('guru.manage-meetings.draw', compact('data_soal', 'hasCorrectAnswer', 'correctAnswerData', 'encryptedTask', 'encryptedQuestion'));
     }
-
 }

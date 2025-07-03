@@ -66,7 +66,7 @@
                                 <button class="p-2 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer" onclick="window.location.href='{{ route('manage-materials', ['id' => $encryptedId]) }}'">
                                     <i class="bi bi-arrow-right"></i>
                                 </button>
-                                <button data-modal-target="edit-meeting-modal" data-modal-toggle="edit-meeting-modal" class="p-2 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer" onclick="openEditModal({{ $data->id }}, '{{$data->title}}', '{{$data->description}}', '{{ $data->open_at }}', '{{ $data->close_at }}')">
+                                <button data-modal-target="edit-meeting-modal" data-modal-toggle="edit-meeting-modal" class="p-2 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer" onclick="openEditModal({{ $data->id }}, '{{ $data->type }}', '{{$data->title}}', '{{$data->description}}', '{{ $data->open_at }}', '{{ $data->close_at }}')">
                                     <i class="bi bi-pencil"></i>
                                 </button>
                                 <a href="{{ route('delete-meetings', ['id' => $data->id]) }}" class="p-2 text-sm rounded-lg bg-red-500 text-sm hover:bg-red-700 text-white cursor-pointer"
@@ -101,6 +101,14 @@
                 <div class="p-4 md:p-5">
                     <form class="space-y-4" action="{{route('store-meetings')}}" method="POST">
                         @csrf
+                        <div>
+                            <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipe Pertemuan</label>
+                            <select id="type" name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                <option value="" selected disabled>Pilihan Tipe</option>
+                                <option value="modul">Modul</option>
+                                <option value="study_case">Studi Kasus</option>
+                            </select>
+                        </div>
                         <div>
                             <label for="meeting" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Judul</label>
                             <input type="text" name="meeting" id="meeting" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
@@ -166,6 +174,14 @@
                         @method('PUT')
                         <input type="text" name="meeting_id" id="meeting_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" hidden />
                         <div>
+                            <label for="type_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipe Pertemuan</label>
+                            <select id="type_edit" name="type_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                <option value="" selected disabled>Pilihan Tipe</option>
+                                <option value="modul">Modul</option>
+                                <option value="study_case">Studi Kasus</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="meeting_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Judul</label>
                             <input type="text" name="meeting_edit" id="meeting_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Pertemuan-" required />
                         </div>
@@ -222,8 +238,27 @@
             });
         }
 
-        function openEditModal(id, title, desc, start, end) {
+        $(document).ready(function() {
+            $("#type").select2({
+                placeholder: 'Pilih Tipe',
+                language: 'id',
+                allowClear: true,
+                width: '100%',
+                theme: "classic"
+            });
+
+            $("#type_edit").select2({
+                placeholder: 'Pilih Tipe',
+                language: 'id',
+                allowClear: true,
+                width: '100%',
+                theme: "classic"
+            });
+        });
+
+        function openEditModal(id, type, title, desc, start, end) {
             document.getElementById('meeting_id').value = id;
+            $('#type_edit').val(type).trigger('change');
             document.getElementById('meeting_edit').value = title;
             document.getElementById('desc_meeting_edit').value = desc;
             document.getElementById('datepicker-range-start_edit').value = start;

@@ -20,7 +20,7 @@
 
     <div class="mt-10 bg-white p-5 pl-8 rounded-l-xl">
         <div>
-            <label for="total question" class="block mb-2 text-sm font-medium text-gray-900">Total Soal</label>
+            <label for="total question" class="block mb-2 text-sm font-medium text-gray-900">Jumlah Soal</label>
             <div class="flex gap-5">
                 <input type="text" id="total_question" inputmode="numeric" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-60 p-2.5">
                 <button id="generate-btn" class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer">
@@ -123,11 +123,10 @@
                             <label class="block mb-2 text-sm font-medium text-gray-900">Pertanyaan:</label>
                             <textarea name="question[]" rows="3" class="w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan soal" required></textarea>
                             <div>
-                                <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kelas</label>
+                                <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipe Soal</label>
                                 <select id="type_${i}" name="type[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                     <option value="" selected disabled>Pilihan Kelas</option>
                                     <option value="main">Biasa</option>
-                                    <option value="bonus">Bonuns</option>
                                 </select>
                             </div>
                         </div>

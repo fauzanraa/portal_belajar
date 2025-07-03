@@ -48,7 +48,7 @@
                             </div>
 
                             <div class="text-center p-3 bg-green-50 rounded-lg">
-                                <div class="text-lg font-bold text-green-600">0%</div>
+                                <div class="text-lg font-bold text-green-600">{{$progress}}%</div>
                                 <div class="text-xs text-green-500">Progress</div>
                             </div>
                         </div>

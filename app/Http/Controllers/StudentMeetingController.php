@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MaterialSession;
 use App\Models\Meeting;
+use App\Models\StudentTaskSession;
 use App\Models\TaskSession;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
@@ -15,18 +16,27 @@ class StudentMeetingController extends Controller
         $user = Auth::user();
         $studentId = $user->userable->id;
 
-        $sessionMeeting = Meeting::join('material_sessions', 'meetings.id', '=', 'material_sessions.meeting_id')
-        ->join('student_material_sessions', 'material_sessions.id', '=', 'student_material_sessions.material_session_id')
-        ->join('task_sessions', 'meetings.id', '=', 'task_sessions.meeting_id')
-        ->join('student_task_sessions', 'task_sessions.id', '=', 'student_task_sessions.task_session_id')
-        ->where('student_material_sessions.student_id', $studentId) 
-        ->orWhere('student_task_sessions.student_id', $studentId)
-        ->select('meetings.*')
-        ->with('teacher')
+        $sessionMeeting = Meeting::with('teacher')
         ->get()
         ->groupBy('teacher.name');
 
-        return view('siswa.list-teachers', compact('sessionMeeting'));
+        $allTaskSessions = collect();
+        foreach ($sessionMeeting as $teacherName => $sessions) {
+            foreach ($sessions as $data) {
+                $sessionTask = TaskSession::where('meeting_id', $data->id)->get();
+                $allTaskSessions = $allTaskSessions->merge($sessionTask);
+            }
+        }
+
+        $studentTasks = StudentTaskSession::whereIn('task_session_id', $allTaskSessions->pluck('id'))
+        ->where('student_id', $studentId)
+        ->get();
+
+        $jumlahTugas = $studentTasks->count();
+        $jumlahTugasSelesai = $studentTasks->where('status', 'finished')->count();
+        $progress = $jumlahTugas > 0 ? ($jumlahTugasSelesai / $jumlahTugas) * 100 : 0;
+        
+        return view('siswa.list-teachers', compact('sessionMeeting', 'progress'));
     }
 
     public function listMeeting($idTeacher){
@@ -36,16 +46,58 @@ class StudentMeetingController extends Controller
         $decryptedIdTeacher = decrypt($idTeacher);
         $teacher = Teacher::find($decryptedIdTeacher);
 
-        $sessionMeeting = Meeting::join('material_sessions', 'meetings.id', '=', 'material_sessions.meeting_id')
-        ->join('student_material_sessions', 'material_sessions.id', '=', 'student_material_sessions.material_session_id')
-        ->join('task_sessions', 'meetings.id', '=', 'task_sessions.meeting_id')
-        ->join('student_task_sessions', 'task_sessions.id', '=', 'student_task_sessions.task_session_id')
-        ->where('student_material_sessions.student_id', $studentId || 'student_task_sessions.student_id', $studentId)
-        ->where('meetings.created_by', $teacher->nip)
+        $sessionMeeting = Meeting::where('created_by', $teacher->nip)
         ->with('teacher')
         ->get();
 
-        return view('siswa.list-meetings', compact('sessionMeeting'));
+        $materialSession = collect();
+        $taskSession = collect();
+
+        $taskSessionId = collect();
+
+        foreach ($sessionMeeting as $data) {
+            $material = MaterialSession::where('meeting_id', $data->id)
+            ->get();
+            $materialSession->put($data->id, $material);
+
+            $task = TaskSession::where('meeting_id', $data->id)
+            ->get();
+            $taskSession->put($data->id, $task);
+
+            $taskSessionId = $taskSessionId->merge($task->pluck('id'));
+        }
+
+        $progress = [];
+
+        foreach ($taskSession as $meetingId => $tasks) {
+            foreach ($tasks as $task) {
+                $studentTasks = StudentTaskSession::where('task_session_id', $task->id)
+                    ->where('student_id', $studentId)
+                    ->get();
+
+                $jumlahTugas = $studentTasks->count();
+                $jumlahTugasSelesai = $studentTasks->where('status', 'finished')->count();
+
+                $progressTask = $jumlahTugas > 0 ? ($jumlahTugasSelesai / $jumlahTugas) * 100 : 0;
+
+                $progress[$task->id] = $progressTask;
+            }
+        }
+
+        $progressMeeting = [];
+
+        foreach ($taskSession as $meetingId => $tasks) {
+            $totalProgress = 0;
+            $jumlahTask = count($tasks);
+
+            foreach ($tasks as $task) {
+                $totalProgress += $progress[$task->id] ?? 0;
+            }
+
+            $progressMeeting[$meetingId] = $jumlahTask > 0 ? ($totalProgress / $jumlahTask) : 0;
+        }
+
+        return view('siswa.list-meetings', compact('sessionMeeting', 'materialSession', 'taskSession', 'progressMeeting'));
     }
 
     public function detailMeeting($idTeacher, $idMeeting){
@@ -74,6 +126,17 @@ class StudentMeetingController extends Controller
         })
         ->get();
 
-        return view('siswa.detail-meetings', compact('sessionMaterial', 'sessionTask'));
+        $preTest = $sessionTask->where('type', 'pretest')->first();
+        $isPreTestDone = false;
+
+        if ($preTest) {
+            $studentPreTest = StudentTaskSession::where('task_session_id', $preTest->id)
+                ->where('student_id', $studentId)
+                ->first();
+
+            $isPreTestDone = $studentPreTest && $studentPreTest->status === 'finished';
+        }
+
+        return view('siswa.detail-meetings', compact('meeting', 'sessionMaterial', 'sessionTask', 'isPreTestDone'));
     }
 }

@@ -20,10 +20,14 @@
 
     <div class="mt-10 bg-white p-5 pl-8 rounded-l-xl">
         <div class="button mt-5 flex gap-4 justify-self-end">
-            <button data-modal-target="add-material-modal" data-modal-toggle="add-material-modal" class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer">
+            <button data-modal-target="add-material-modal" data-modal-toggle="add-material-modal" class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer @if ($pretest->Empty() && $data_pertemuan->type != 'modul') button-disabled @endif" @if ($pretest->Empty() && $data_pertemuan->type != 'modul') disabled @endif>
                 <i class="bi bi-plus"></i> Tambah materi
             </button>
-            <button data-modal-target="add-task-modal" data-modal-toggle="add-task-modal" class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer">
+            <button 
+                data-modal-target="add-task-modal" 
+                data-modal-toggle="add-task-modal" 
+                class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer @if ($pretest->isNotEmpty() && $posttest->isNotEmpty()) button-disabled @endif" 
+                @if ($pretest->isNotEmpty() && $posttest->isNotEmpty()) disabled @endif>
                 <i class="bi bi-plus"></i> Tambah tugas
             </button>
         </div>
@@ -53,7 +57,7 @@
                         @php
                             $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($data->id);
                         @endphp
-                        <a href="{{route('detail-tasks', ['id' => $encryptedTask])}}" class="flex bg-white border border-gray-200 rounded-lg shadow-sm w-full hover:bg-sky-500 hover:scale-101 transition-all group">
+                        <a href="{{route('detail-tasks', ['id' => $encryptedTask])}}" class="flex mt-5 bg-white border border-gray-200 rounded-lg shadow-sm w-full hover:bg-sky-500 hover:scale-101 transition-all group">
                             <div class="flex-none w-1/4 flex items-center justify-center p-4 border-r border-gray-100 group-hover:border-white">
                                 <i class="bi bi-clipboard text-7xl group-hover:text-white"></i>
                             </div>
@@ -143,8 +147,8 @@
                             <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipe Tugas</label>
                             <select id="type" name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                 <option value="" selected disabled>Pilihan</option>
-                                <option value="pretest">Pre-Test</option>
-                                <option value="posttest">Post-Test</option>
+                                <option value="pretest" @if ($pretest->isNotEmpty() || $data_pertemuan->type != 'modul') disabled @endif>Pre-Test<option>
+                                <option value="posttest" @if ($pretest->isEmpty() && $data_pertemuan->type === 'modul') disabled @endif>Post-Test</option>
                             </select>
                         </div>
                         <div>
@@ -202,7 +206,7 @@
                         <div>
                             <label for="duration" class="block mb-2 text-sm font-medium text-gray-900">Durasi</label>
                             <input type="text" inputmode="numeric" name="duration" id="duration" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
-                            <p class="text-red-300 text-xs pt-1">nb : tulisankan dalam satuan menit</p>
+                            <p class="text-red-300 text-xs pt-1">nb : tulis dalam satuan menit</p>
                         </div>
                         <button type="submit" class="w-full text-white mt-1 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Simpan</button>
                     </form>
@@ -282,7 +286,28 @@
 @endsection
 
 @section('script')
-    <script>   
+    <script> 
+        document.addEventListener('DOMContentLoaded', function () {
+            @if ($data_pertemuan->type === 'modul')
+                @if ($pretest->isEmpty())
+                    Swal.fire({
+                        title: 'Peringatan!',
+                        text: 'Harap buat pretest terlebih dahulu.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const modalButton = document.querySelector('[data-modal-target="add-task-modal"]');
+                            if (modalButton) {
+                                modalButton.click();
+                            }
+                        }
+                    });
+                @endif
+            @endif
+            
+        });
+        
         if (document.getElementById("meeting-table") && typeof simpleDatatables.DataTable !== 'undefined') {
             const dataTable = new simpleDatatables.DataTable("#meeting-table", {
                 searchable: true,
@@ -290,42 +315,9 @@
             });
         }
 
-        function openEditModal(id, title, desc, start, end) {
-            document.getElementById('meeting_id').value = id;
-            document.getElementById('meeting_edit').value = title;
-            document.getElementById('desc_meeting_edit').value = desc;
-            document.getElementById('datepicker-range-start_edit').value = start;
-            document.getElementById('datepicker-range-end_edit').value = end;
-
-            document.getElementById('edit-meeting-modal').classList.remove('hidden');
-        }
-
-        document.querySelector('[data-modal-hide="edit-meeting-modal"]').addEventListener('click', function () {
-            document.getElementById('edit-meeting-modal').classList.add('hidden');
-        });
-
-        function showConfirmation(url) {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: 'Data ini akan dihapus!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Iya',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = document.getElementById('delete-form');
-                    form.action = url;
-                    form.submit();
-                }
-            });
-        }
-
         $(document).ready(function() {
             $("#type").select2({
-                placeholder: 'Pilih Sekolah',
+                placeholder: 'Pilih Tipe',
                 language: 'id',
                 allowClear: true,
                 width: '100%',

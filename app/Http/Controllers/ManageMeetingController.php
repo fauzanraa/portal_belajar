@@ -22,6 +22,7 @@ class ManageMeetingController extends Controller
 
     public function store(Request $request){
         $request->validate([
+            'type' => 'required',
             'meeting' => 'required',
             'start' => 'required|date',
             'end' => 'required|date'
@@ -38,6 +39,7 @@ class ManageMeetingController extends Controller
             $meeting->description = $request->desc_meeting;
             $meeting->open_at = $start;
             $meeting->close_at = $end;
+            $meeting->type = $request->type;
             $meeting->created_by = Auth::user()->userable->nip;
             $meeting->save();
             
@@ -52,6 +54,7 @@ class ManageMeetingController extends Controller
 
     public function update(Request $request){
         $request->validate([
+            'type_edit' => 'required',
             'meeting_edit' => 'required',
             'start' => 'required|date',
             'end' => 'required|date'
@@ -68,6 +71,7 @@ class ManageMeetingController extends Controller
             $meeting->description = $request->desc_meeting_edit;
             $meeting->open_at = $start;
             $meeting->close_at = $end;
+            $meeting->type = $request->type_edit;
             $meeting->created_by = Auth::user()->userable->nip;
             $meeting->save();
             
@@ -104,7 +108,9 @@ class ManageMeetingController extends Controller
         $data_pertemuan = Meeting::find($decryptedId);
         $data_materi = MaterialSession::where('meeting_id', $data_pertemuan->id)->get();
         $data_tugas = TaskSession::where('meeting_id', $data_pertemuan->id)->get();
+        $pretest = TaskSession::where('meeting_id', $data_pertemuan->id)->where('type', 'pretest')->get();
+        $posttest = TaskSession::where('meeting_id', $data_pertemuan->id)->where('type', 'posttest')->get();
 
-        return view('guru.manage-meetings.material', compact('data_pertemuan', 'user', 'id_meeting', 'data_materi', 'data_tugas'));
+        return view('guru.manage-meetings.modul', compact('data_pertemuan', 'user', 'id_meeting', 'data_materi', 'data_tugas' , 'pretest', 'posttest'));
     }
 }

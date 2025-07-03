@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ComponentSetting;
 use App\Models\Meeting;
 use App\Models\StudentTaskSession;
 use App\Models\TaskQuestion;
@@ -22,8 +23,44 @@ class ManageTaskController extends Controller
         ->where('task_session_id', $decryptedId)
         ->get()
         ->groupBy('student.classroom.class_name');
+        $encryptedTaskSession = Crypt::encrypt($data_tugas->id);
+        $user = Auth::user();
+        $pengaturanKomponen = $this->getAllowedComponents($decryptedId);
 
-        return view('guru.manage-meetings.detail-task', compact('data_tugas', 'data_soal', 'sesi_tugas_siswa'));
+        return view('guru.manage-meetings.detail-task', compact('data_tugas', 'data_soal', 'sesi_tugas_siswa', 'user', 'encryptedTaskSession', 'pengaturanKomponen'));
+    }
+
+    private function getAllowedComponents($taskId) {
+        $settings = ComponentSetting::where('task_session_id', $taskId)
+            ->where('is_enabled', true)
+            ->pluck('component_name')
+            ->toArray();
+        
+        return $settings;
+    }
+
+    public function updateComponentSettings(Request $request, $id) {
+        if ($request->has('components') && is_array($request->components)) {
+            $task = TaskSession::findOrFail($id);
+            ComponentSetting::where('task_session_id', $task->id)->delete();
+
+            $componentData = [];
+            foreach ($request->components as $componentName) {
+                $componentData[] = [
+                    'task_session_id' => $task->id,
+                    'component_name' => $componentName,
+                    'is_enabled' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            if (!empty($componentData)) {
+                ComponentSetting::insert($componentData);
+            }
+            
+            return response()->json(['success' => true]);
+        }
     }
 
     public function store($id, Request $request){
@@ -68,6 +105,39 @@ class ManageTaskController extends Controller
         }
     }
 
+    public function update($id, Request $request){   
+        $request->validate([
+            'task_id' => 'required',
+            'task' => 'required',
+            'start' => 'required|date',
+            'end' => 'required|date',
+            'time_start' => 'required',
+            'time_end' => 'required',
+            'duration' => 'required|numeric'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $open_at = ($request->start . ' ' . $request->time_start);
+            $close_at = ($request->end . ' ' . $request->time_end);
+
+            $task = TaskSession::find($request->task_id);
+            $task->name = $request->task;
+            $task->open_at = $open_at;
+            $task->close_at = $close_at;
+            $task->duration = $request->duration;
+            $task->save();
+            
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Task updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to update task: ' . $e->getMessage());
+        }
+    }
+
     public function question($id){
         $decryptedId = Crypt::decrypt($id);
         $data_tugas = TaskSession::find($decryptedId);
@@ -75,7 +145,7 @@ class ManageTaskController extends Controller
         return view('guru.manage-meetings.question', compact('data_tugas'));
     }
 
-    public function storeQuestion($id, Request $request){    
+    public function storeQuestion($id, Request $request){
         $request->validate([
             'question_*' => 'required',
             'type_*' => 'required'
@@ -86,6 +156,12 @@ class ManageTaskController extends Controller
             
             $decryptedId = Crypt::decrypt($id);
             $data_tugas = TaskSession::find($decryptedId);
+            $question = TaskQuestion::where('task_session_id', $data_tugas->id)->get();
+            if($question->isNotEmpty()){
+                $question->each(function ($questions) {
+                    $questions->delete();
+                });
+            }
             
             for ($i=0; $i < $request->total_question; $i++) { 
                 $question = new TaskQuestion();
