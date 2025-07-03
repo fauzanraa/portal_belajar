@@ -21,13 +21,15 @@ class HomepageController extends Controller
 
     public function indexGuru(){
         $user = Auth::user();
+        $teacher = Teacher::find($user->userable->id);
 
-        return view('guru.index', compact('user'));
+        return view('guru.index', compact('user', 'teacher'));
     }
 
     public function indexSiswa(){
         $user = Auth::user();
+        $student = Student::find($user->userable->id);
 
-        return view('siswa.index', compact('user'));
+        return view('siswa.index', compact('user', 'student'));
     }
 }

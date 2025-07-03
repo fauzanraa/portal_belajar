@@ -8,7 +8,7 @@
 
     <div class="w-full">
         <div class="mt-10">
-            <div class="p-5 px-8 rounded-2xl bg-white relative group">
+            <div class="p-5 px-8 rounded-l-2xl bg-white relative group">
                 <p class="font-bold text-4xl">Halo, Admin!</p>
                 <i class="bi bi-person-workspace absolute bottom-2 right-3 text-gray-500 opacity-30 text-5xl"></i>
             </div>
