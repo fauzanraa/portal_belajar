@@ -25,7 +25,7 @@
         @yield('style')
     </head>
 </head>
-<body class="bg-slate-50 font-fira" onload="init()">
+<body class="bg-slate-50 font-fira" @yield('onload')>
     @include('sweetalert2::index')
     <div class="flex">
         <div class="w-[22%]">
