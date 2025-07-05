@@ -19,16 +19,16 @@ class LoginController extends Controller
             $roles = $user->roles->pluck('name')->toArray();
 
             if (in_array('admin', $roles)) {
-                return redirect()->route('admin-index'); 
+                return redirect()->route('admin-index')->with('success', 'Login berhasil'); 
             } elseif (in_array('guru', $roles)) {
-                return redirect()->route('teacher-index'); 
+                return redirect()->route('teacher-index')->with('success', 'Login berhasil'); 
             } elseif (in_array('siswa', $roles)) {
-                return redirect()->route('student-index'); 
+                return redirect()->route('student-index')->with('success', 'Login berhasil'); 
             } else {
-                return redirect()->route('login')->withErrors(['role_error' => 'Role tidak valid.']);
+                return redirect()->route('login')->with('error', 'Login gagal, periksa kembali username dan password.');
             }
         }
-        return redirect()->route('login');
+        return redirect()->route('login')->with('error', 'Login gagal, periksa kembali username dan password.');
     }
 
     public function logout(){
