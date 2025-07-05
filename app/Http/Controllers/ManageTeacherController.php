@@ -41,10 +41,10 @@ class ManageTeacherController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Teacher created successfully!');
+            return redirect()->back()->with('success', 'Berhasil menambahkan data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create teacher: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambahkan data!');
         }
     }
 
@@ -73,10 +73,10 @@ class ManageTeacherController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Teacher updated successfully!');
+            return redirect()->back()->with('success', 'Berhasil mengupdate data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to update teacher: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate data!');
         }
     }
 
@@ -90,10 +90,10 @@ class ManageTeacherController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Teacher deleted successfully!');
+            return redirect()->back()->with('success', 'Berhasil menghapus data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to delete teacher: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus data!');
         }
     }
 }

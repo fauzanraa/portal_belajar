@@ -19,7 +19,6 @@ class ManageClassController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'school_id' => 'required',
             'classroom' => 'required',
         ]);
 
@@ -32,10 +31,11 @@ class ManageClassController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Class created successfully!');
+            return redirect()->back()->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create class: ' . $e->getMessage());
+            // return redirect()->back()->with('error', 'Gagal menyimpan data' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambahkan data!');
         }
     }
 
@@ -55,10 +55,10 @@ class ManageClassController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Class updated successfully!');
+            return redirect()->back()->with('success', 'Berhasil mengupdate data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to update class: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate data!');
         }
     }
 
@@ -74,10 +74,10 @@ class ManageClassController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Classroom deleted successfully!');
+            return redirect()->back()->with('success', 'Berhasil menghapus data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to classroom school: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus data!');
         }
     }
 }

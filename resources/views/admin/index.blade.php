@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="mt-3">
-                    <div class="w-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
+                    <div class="w-full bg-white rounded-lg shadow-sm p-4 md:p-6">
                         <div class="flex justify-between border-gray-200 border-b dark:border-gray-700 pb-3">
                             <dl>
                                 <dt class="text-l font-normal text-black">Jumlah Modul</dt>
@@ -51,7 +51,7 @@
         <div class="w-1/3 flex justify-end">
             <div class="w-full">
                 <div class="mt-10">
-                    <div class="bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
+                    <div class="bg-white rounded-lg shadow-sm p-4 md:p-6">
                         <div class="flex justify-between items-start w-full">
                             <div class="flex-col items-center">
                                 <div class="flex items-center mb-1">

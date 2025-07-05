@@ -287,7 +287,8 @@
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Iya',
-                cancelButtonText: 'Batal'
+                cancelButtonText: 'Batal',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     const form = document.getElementById('delete-form');
