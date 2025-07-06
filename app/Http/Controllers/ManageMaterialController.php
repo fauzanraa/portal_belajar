@@ -75,6 +75,11 @@ class ManageMaterialController extends Controller
             $cur_time = date('hisdmY');
 
             $material = MaterialSession::find($decryptedId);
+
+            if (!Storage::disk('public')->exists('assets/materials')) {
+                Storage::disk('public')->makeDirectory('assets/materials');
+            }
+
             if($request->file_material == true){
                 $file_name = 'materi_' . $cur_time . '.' . $request->file_material->extension();
                 $path = $request->file_material->storeAs('public/assets/materials',$file_name);

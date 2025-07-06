@@ -45,10 +45,10 @@ class ManageMeetingController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Meeting created successfully!');
+            return redirect()->back()->with('success', 'Berhasil menambahkan data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create meeting: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambahkan data!');
         }
     }
 
@@ -77,10 +77,10 @@ class ManageMeetingController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Meeting updated successfully!');
+            return redirect()->back()->with('success', 'Berhasil mengupdate data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to update meeting: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate data!');
         }
     }
 
@@ -94,10 +94,10 @@ class ManageMeetingController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Meeting deleted successfully!');
+            return redirect()->back()->with('success', 'Berhasil menghapus data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to delete meeting: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus data!');
         }
     }
 

@@ -2,15 +2,17 @@
 
 @section('content')
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showSuccessMessage(@json(session('success')));
+            });
+        </script>
+    @elseif(session('error')) 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showErrorMessage(@json(session('error')));
+            });
+        </script>
     @endif
 
     <div class="w-full rounded-bl-xl p-5 pl-8 bg-white">   
@@ -287,6 +289,54 @@
 
 @section('script')
     <script> 
+        function showSuccessMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="bi bi-check-lg mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function showErrorMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="bi bi-x-circle-fill mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             @if ($data_pertemuan->type === 'modul')
                 @if ($pretest->isEmpty())

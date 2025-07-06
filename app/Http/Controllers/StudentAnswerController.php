@@ -99,6 +99,10 @@ class StudentAnswerController extends Controller
                             
                             $imageFileName = 'studentAnswer' . $request->student_id . '_' . $questionId . '_' . time() . '.png';
                             
+                            if (!Storage::disk('public')->exists('assets/flowcharts/studentAnswers')) {
+                                Storage::disk('public')->makeDirectory('assets/flowcharts/studentAnswers');
+                            }
+
                             // Simpan gambar
                             $saved = Storage::disk('public')->put('assets/flowcharts/studentAnswers/' . $imageFileName, $decodedImage);
                             

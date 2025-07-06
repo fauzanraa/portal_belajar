@@ -1,17 +1,19 @@
 @extends('layout-admins.app')
 
 @section('content')
-    {{-- @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showSuccessMessage(@json(session('success')));
+            });
+        </script>
+    @elseif(session('error')) 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showErrorMessage(@json(session('error')));
+            });
+        </script>
     @endif
-
-    @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
-    @endif --}}
 
     <div class="w-full rounded-bl-xl p-5 pl-8 bg-white">   
         <h1>Manajemen Sesi Tugas</h1>
@@ -36,7 +38,7 @@
                         </div>
                     </li>
                     @php
-                        $uniqueClasses = $data_siswa->groupBy('classroom.class_name');
+                        $uniqueClasses = $filterSiswa->groupBy('classroom.class_name');
                     @endphp
                     @foreach ($uniqueClasses as $className => $students)
                         <li>
@@ -50,7 +52,7 @@
             </div>
         </div>
         <div class="mt-9">
-            <form action="{{route('store-sessions', ['id' => $id])}}" method="POST">
+            <form action="{{route('store-sessions', ['id' => $id, 'type' => $type])}}" method="POST">
             @csrf
                 <table id="student-table" class="relative">
                     <thead>
@@ -77,15 +79,15 @@
                         </tr>
                     </thead>
                     <tbody id="student-tbody">
-                        @foreach ($data_siswa as $data)
+                        @foreach ($filterSiswa as $data)
                         <input type="text" id="class_id" name="class_id" value="all" hidden>
                             <tr class="student-row" data-class="{{ $data->classroom->class_name }}">
                                 <td>{{$loop->iteration}}</td>
-                                <td class="font-medium text-gray-900 whitespace-nowrap dark:text-white">{{$data->name}}</td>
-                                <td class="font-medium text-gray-900 whitespace-nowrap dark:text-white">{{$data->classroom->class_name}}</td>
+                                <td class="font-medium text-gray-900 whitespace-nowrap">{{$data->name}}</td>
+                                <td class="font-medium text-gray-900 whitespace-nowrap">{{$data->classroom->class_name}}</td>
                                 <td>
                                     <div class="flex items-center">
-                                        <input id="checkbox-table-search-{{ $data->id }}" type="checkbox" name="student_id[]" value="{{$data->id}}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <input id="checkbox-table-search-{{ $data->id }}" type="checkbox" name="student_id[]" value="{{$data->id}}" {{ in_array($data->id, $siswaTerdaftarPerAccess) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="checkbox-table-search-{{ $data->id }}" class="sr-only">checkbox</label>
                                     </div>
                                 </td>
@@ -94,6 +96,10 @@
                     </tbody>
                 </table>
                 <div class="button mt-5 flex justify-self-end gap-4">
+                    <a href="{{ route('detail-tasks', $id) }}"
+                        class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors duration-200">
+                        <i class="bi bi-arrow-left mr-2"></i> Kembali
+                    </a>
                     <button id="submit-btn" type="submit" class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer">
                         <i class="bi bi-floppy-fill mr-2"></i> Simpan
                     </button>
@@ -110,6 +116,54 @@
 
 @section('script')
     <script>   
+        function showSuccessMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="bi bi-check-lg mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function showErrorMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="bi bi-x-circle-fill mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+        }
+
         let dataTable;
         if (document.getElementById("student-table") && typeof simpleDatatables.DataTable !== 'undefined') {
             dataTable = new simpleDatatables.DataTable("#student-table", {

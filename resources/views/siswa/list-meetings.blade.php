@@ -13,13 +13,6 @@
                     <div class="flex">
                         <div class="relative bg-gradient-to-r from-sky-500 to-indigo-600 p-6 text-white w-80">
                             <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-10 rounded-full -mr-12 -mt-12"></div>
-                            
-                            {{-- <div class="absolute top-4 right-4">
-                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
-                                    Aktif
-                                </span>
-                            </div> --}}
 
                             <!-- Module Icon -->
                             <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mb-4 backdrop-blur-sm">

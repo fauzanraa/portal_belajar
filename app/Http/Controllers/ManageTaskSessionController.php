@@ -12,42 +12,76 @@ use Illuminate\Support\Facades\DB;
 
 class ManageTaskSessionController extends Controller
 {
-    public function index($id){
+    public function index($id, $type){
         $user = Auth::user();
-        $data_siswa = Student::with('classroom')->get();
 
-        return view('guru.manage-meetings.task-session', compact('user', 'data_siswa', 'id'));
+        $decryptedId = Crypt::decrypt($id);
+
+        $dataSiswa = Student::with('classroom')->get();
+
+        $siswaTerdaftar = StudentTaskSession::where('task_session_id', $decryptedId)
+        ->pluck('student_id')
+        ->toArray();
+
+        $siswaTerdaftarPerAccess = StudentTaskSession::where('task_session_id', $decryptedId)
+        ->where('access', $type)
+        ->pluck('student_id')
+        ->toArray();
+
+        $filterSiswa = $dataSiswa->filter(function ($student) use ($siswaTerdaftar, $siswaTerdaftarPerAccess) {
+            return !in_array($student->id, $siswaTerdaftar) || in_array($student->id, $siswaTerdaftarPerAccess);
+        });
+
+        return view('guru.manage-meetings.task-session', compact('user', 'filterSiswa', 'id', 'type', 'siswaTerdaftarPerAccess'));
     }
 
-    public function store($id, Request $request){
-        // dd($request->all());
-        $request->validate([
-            'student_id' => 'required'
-        ]);
-
+    public function store($id, $type, Request $request){
         try {
             DB::beginTransaction();
             
             $decryptedId = Crypt::decrypt($id);
-            $data_tugas = TaskSession::find($decryptedId);
+            $dataTugas = TaskSession::find($decryptedId);
 
-            foreach ($request->student_id as $studentId) {
-                $session = new StudentTaskSession();
-                $session->task_session_id = $data_tugas->id;
-                $session->student_id = $studentId;
-                $session->score = 0;
-                $session->status = 'in_progress';
-                $session->duration = 0;
-                $session->finished_at = null;
-                $session->save();
+            $siswaTerdaftar = StudentTaskSession::where('task_session_id', $dataTugas->id)
+            ->where('access', $type)
+            ->pluck('student_id')
+            ->toArray();
+
+            $sesiSiswa = $request->student_id ?? [];
+
+            $hapusSesi = array_diff($siswaTerdaftar, $sesiSiswa);
+
+            if (!empty($hapusSesi)) {
+                StudentTaskSession::where('task_session_id', $dataTugas->id)
+                    ->where('access', $type)
+                    ->whereIn('student_id', $hapusSesi)
+                    ->delete();
             }
-            
+
+            foreach ($sesiSiswa as $studentId) {
+                $exist = StudentTaskSession::where('task_session_id', $dataTugas->id)
+                ->where('access', $type)
+                ->where('student_id', $studentId)
+                ->exists();
+
+                if(!$exist){
+                    StudentTaskSession::create([
+                        'task_session_id' => $dataTugas->id,
+                        'student_id' => $studentId,
+                        'score' => 0,
+                        'status' => 'in_progress',
+                        'duration' => 0,
+                        'finished_at' => null,
+                        'access' => $type
+                    ]);
+                }
+            }
             DB::commit();
 
-            return redirect()->route('detail-tasks', $id)->with('success', 'Session created successfully!');
+            return redirect()->route('detail-tasks', $id)->with('success', 'Berhasil menambah data');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create session: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambah data!' . $e->getMessage());
         }
     }
 }

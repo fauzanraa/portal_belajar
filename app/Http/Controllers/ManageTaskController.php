@@ -17,17 +17,30 @@ class ManageTaskController extends Controller
 {
     public function index($id){
         $decryptedId = Crypt::decrypt($id);
-        $data_tugas = TaskSession::find($decryptedId);
-        $data_soal = TaskQuestion::where('task_session_id', $decryptedId)->get();
-        $sesi_tugas_siswa = StudentTaskSession::with(['student.classroom'])
+
+        $dataTugas = TaskSession::find($decryptedId);
+
+        $dataSoal = TaskQuestion::where('task_session_id', $decryptedId)->get();
+
+        $sesiSiswaSistem = StudentTaskSession::with(['student.classroom'])
         ->where('task_session_id', $decryptedId)
+        ->where('access', 'system')
         ->get()
         ->groupBy('student.classroom.class_name');
-        $encryptedTaskSession = Crypt::encrypt($data_tugas->id);
+
+        $sesiSiswaNonSistem = StudentTaskSession::with(['student.classroom'])
+        ->where('task_session_id', $decryptedId)
+        ->where('access', 'non_system')
+        ->get()
+        ->groupBy('student.classroom.class_name');
+
+        $encryptedTaskSession = Crypt::encrypt($dataTugas->id);
+
         $user = Auth::user();
+
         $pengaturanKomponen = $this->getAllowedComponents($decryptedId);
 
-        return view('guru.manage-meetings.detail-task', compact('data_tugas', 'data_soal', 'sesi_tugas_siswa', 'user', 'encryptedTaskSession', 'pengaturanKomponen'));
+        return view('guru.manage-meetings.detail-task', compact('dataTugas', 'dataSoal', 'sesiSiswaSistem', 'sesiSiswaNonSistem' ,'user', 'encryptedTaskSession', 'pengaturanKomponen'));
     }
 
     private function getAllowedComponents($taskId) {
@@ -98,10 +111,10 @@ class ManageTaskController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Task created successfully!');
+            return redirect()->back()->with('success', 'Berhasil menambah data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create task: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambah data!');
         }
     }
 
@@ -131,10 +144,10 @@ class ManageTaskController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Task updated successfully!');
+            return redirect()->back()->with('success', 'Berhasil mengupdate data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to update task: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate data!');
         }
     }
 
@@ -173,10 +186,10 @@ class ManageTaskController extends Controller
             
             DB::commit();
 
-            return redirect()->route('detail-tasks', ['id' => $id])->with('success', 'Question created successfully!');
+            return redirect()->route('detail-tasks', ['id' => $id])->with('success', 'Berhasil menambah data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create question: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambah data!');
         }
     }
 }

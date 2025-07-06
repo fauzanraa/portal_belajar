@@ -177,7 +177,7 @@
             `;
 
             // AJAX request to get meeting data
-            fetch(`/guru/manage-scores/detail-modal/${meetingId}`, {
+            fetch(`/guru/manage-progress/detail-modal/${meetingId}`, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -208,7 +208,7 @@
                 </div>
             `;
 
-            fetch(`/teacher/manage-scores/detail-modal/${studentId}/${taskId}/${meetingId}`, {
+            fetch(`/teacher/manage-progress/detail-modal/${studentId}/${taskId}/${meetingId}`, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',

@@ -55,18 +55,18 @@
         <!-- Action Buttons -->
         <div class="mt-6 bg-white rounded-xl shadow-lg p-6 border border-gray-200">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button onclick="event.preventDefault(); showConfirmation(saveFlowchartToDatabase)" class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                    <div class="flex items-center justify-center">
-                        <i class="bi bi-cloud-upload text-lg mr-2"></i>
-                        <span>Simpan</span>
-                    </div>
-                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                </button>
-                
                 <button onclick="window.location.href='{{ route('detail-tasks', ['id' => $encryptedTask]) }}'" class="group relative overflow-hidden bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                     <div class="flex items-center justify-center">
                         <i class="bi bi-arrow-left text-lg mr-2"></i>
                         <span>Kembali</span>
+                    </div>
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                </button>
+
+                <button onclick="event.preventDefault(); showConfirmation(saveFlowchartToDatabase)" class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <div class="flex items-center justify-center">
+                        <i class="bi bi-cloud-upload text-lg mr-2"></i>
+                        <span>Simpan</span>
                     </div>
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 </button>
@@ -515,10 +515,14 @@
                     new go.Binding("text").makeTwoWay())
                 ),
                 // Port untuk koneksi
-                makePort("T", go.Spot.Top, false, true),
-                makePort("L", go.Spot.Left, true, true),
-                makePort("R", go.Spot.Right, true, true),
-                makePort("B", go.Spot.Bottom, true, false)
+                makePort("T", go.Spot.Top, true, true),           
+                makePort("TR", go.Spot.TopRight, true, true),     
+                makePort("R", go.Spot.Right, true, true),         
+                makePort("BR", go.Spot.BottomRight, true, true),  
+                makePort("B", go.Spot.Bottom, true, true),        
+                makePort("BL", go.Spot.BottomLeft, true, true),   
+                makePort("L", go.Spot.Left, true, true),          
+                makePort("TL", go.Spot.TopLeft, true, true)       
             ));
 
             // replace the default Link template in the linkTemplateMap
@@ -552,8 +556,7 @@
                     {
                       textAlign: "center",
                       font: "10pt helvetica, arial, sans-serif",
-                      stroke: "#333333",
-                      editable: true
+                      stroke: "#333333"
                     },
                     new go.Binding("text").makeTwoWay())
                 )
@@ -562,7 +565,37 @@
             // This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
             function showLinkLabel(e) {
               var label = e.subject.findObject("LABEL");
-              if (label !== null) label.visible = (e.subject.fromNode.data.figure === "Diamond");
+              if (label !== null) {
+                  var fromNode = e.subject.fromNode;
+                  
+                  // Hanya tampilkan label untuk node Decision (Diamond)
+                  if (fromNode.data.figure === "Diamond") {
+                      label.visible = true;
+                      
+                      // Hitung jumlah link yang keluar dari node ini
+                      var outgoingLinks = [];
+                      fromNode.findLinksOutOf().each(function(link) {
+                          outgoingLinks.push(link);
+                      });
+                      
+                      // Tentukan teks berdasarkan urutan link
+                      var linkIndex = outgoingLinks.indexOf(e.subject);
+                      var labelText = "";
+                      
+                      if (linkIndex === 0) {
+                          labelText = "Yes";
+                      } else if (linkIndex === 1) {
+                          labelText = "No";
+                      } else {
+                          labelText = "Option " + (linkIndex + 1);
+                      }
+                      
+                      // Update teks label
+                      myDiagram.model.setDataProperty(e.subject.data, "text", labelText);
+                  } else {
+                      label.visible = false;
+                  }
+              }
             }
             // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
             myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;

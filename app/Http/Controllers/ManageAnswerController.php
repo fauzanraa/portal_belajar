@@ -67,9 +67,9 @@ class ManageAnswerController extends Controller
                     $imageFileName = 'imgAnswer' . $request->soal_id . '_' . time() . '.png';
                     
                     // Buat direktori jika belum ada
-                    // if (!Storage::disk('public')->exists('flowcharts')) {
-                    //     Storage::disk('public')->makeDirectory('flowcharts');
-                    // }
+                    if (!Storage::disk('public')->exists('assets/flowcharts/keyAnswers')) {
+                        Storage::disk('public')->makeDirectory('assets/flowcharts/keyAnswers');
+                    }
                     
                     // Hapus gambar lama jika ada
                     if ($question->flowchart_img && Storage::disk('public')->exists('assets/flowcharts/keyAnswers/' . $question->flowchart_img)) {
