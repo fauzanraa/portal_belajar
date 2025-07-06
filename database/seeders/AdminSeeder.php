@@ -37,7 +37,7 @@ class AdminSeeder extends Seeder
 
         DB::table('user_systems')->insert([
             'userable_id' => 1,
-            'userable_name' => 'Admin',
+            'userable_type' => 'App\Models\Admin',
             'username' => 'admin',
             'password' => Hash::make('admin'),
         ]);

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('component_settings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('task_id');
+            $table->unsignedBigInteger('task_session_id');
             $table->string('component_name');
             $table->boolean('is_enabled')->default(false);
             $table->timestamps();

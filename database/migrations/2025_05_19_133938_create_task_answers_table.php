@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('task_question_id');
             $table->string('student_id');
             $table->json('answer');
+            $table->text('flowchart_img');
             $table->timestamps();
         });
     }
