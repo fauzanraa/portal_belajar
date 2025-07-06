@@ -18,7 +18,10 @@ return new class extends Migration
             $table->decimal('score', 5, 2);
             $table->enum('status', ['in_progress', 'finished']);
             $table->integer('duration');
+            $table->integer('total_elements');
+            $table->integer('correct_elements');
             $table->timestamp('finished_at')->nullable();
+            $table->enum('access', ['system', 'non_system'])->nullable();
             $table->timestamps();
         });
     }

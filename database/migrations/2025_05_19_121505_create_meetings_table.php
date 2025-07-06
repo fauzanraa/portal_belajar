@@ -17,6 +17,7 @@ return new class extends Migration
             $table->longText('description');
             $table->date('open_at');
             $table->date('close_at');
+            $table->enum('type', ['modul', 'study_case']);
             $table->string('created_by');
             $table->timestamps();
         });
