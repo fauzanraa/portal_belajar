@@ -9,6 +9,7 @@ use App\Http\Controllers\ManageMaterialController;
 use App\Http\Controllers\ManageMaterialSessionController;
 use App\Http\Controllers\ManageMeetingController;
 use App\Http\Controllers\ManageSchoolController;
+use App\Http\Controllers\ManageProgressController;
 use App\Http\Controllers\ManageScoreController;
 use App\Http\Controllers\ManageStudentController;
 use App\Http\Controllers\ManageTaskController;
@@ -75,11 +76,15 @@ Route::prefix('teacher')->middleware('role:guru')->group(function () {
     Route::get('/manage-tasks/{id}/draw-answer', [ManageAnswerController::class, 'index'])->name('draw-correct-answer');
     Route::post('/manage-tasks/{id}/draw-answer/store', [ManageAnswerController::class, 'store'])->name('store-correct-answer');
     Route::get('/manage-tasks/{id}/draw-answer/edit', [ManageAnswerController::class, 'editAnswer'])->name('edit-correct-answer');
-    Route::get('/task-materials/{id}', [ManageTaskSessionController::class, 'index'])->name('session-tasks');
-    Route::post('/session-task/{id}/store', [ManageTaskSessionController::class, 'store'])->name('store-sessions');
+    Route::get('/manage-tasks/{id}/{type}', [ManageTaskSessionController::class, 'index'])->name('session-tasks');
+    Route::post('/manage-tasks/{id}/{type}/store', [ManageTaskSessionController::class, 'store'])->name('store-sessions');
     Route::get('/manage-scores', [ManageScoreController::class, 'index'])->name('manage-scores');
-    Route::get('/manage-scores/{idStudent}/{idTask}', [ManageScoreController::class, 'detail'])->name('detail-scores');
-    Route::get('/manage-scores/detail-modal/{idStudent}/{idTask}/{idMeeting}', [ManageScoreController::class, 'getStudentModalData'])->name('modal-scores');
+    Route::get('/manage-scores/{idModul}', [ManageScoreController::class, 'detail'])->name('detail-moduls');
+    Route::get('/manage-scores/{idModul}/{idSession}', [ManageScoreController::class, 'assessment'])->name('detail-assessments');
+    Route::post('/manage-scores/{idModul}/{idSession}/store', [ManageScoreController::class, 'store'])->name('store-assessments');
+    Route::get('/manage-progress', [ManageProgressController::class, 'index'])->name('manage-progress');
+    Route::get('/manage-progress/{idStudent}', [ManageProgressController::class, 'detail'])->name('detail-progress');
+    Route::get('/manage-progress/{idStudent}/summary', [ManageProgressController::class, 'summary'])->name('summary-progress');
 });
 
 // siswa
