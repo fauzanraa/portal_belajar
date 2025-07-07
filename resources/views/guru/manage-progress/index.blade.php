@@ -104,7 +104,14 @@
                                 
                                 <!-- Progress Section -->
                                 <div class="flex items-center space-x-6">
-                                    <!-- Progress Circle -->
+                                    @php 
+                                        $encryptedStudent = Illuminate\Support\Facades\Crypt::encrypt($data->student_id);
+                                    @endphp
+                                    <button onclick="window.location.href='{{route('detail-progress', $encryptedStudent)}}'" class="detail-btn px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                                        <i class="bi bi-eye mr-1"></i>
+                                        Detail
+                                    </button> 
+
                                     <div class="relative">
                                         <div class="w-16 h-16">
                                             <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
@@ -122,16 +129,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    {{-- @php
-                                        $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($data->task_session_id);
-                                        $encryptedStudent = Illuminate\Support\Facades\Crypt::encrypt($data->student_id);
-                                    @endphp
-                                    <!-- Details Button -->
-                                    <button onclick="window.location.href='{{ route('detail-scores', ['idTask' => $encryptedTask, 'idStudent' => $encryptedStudent]) }}'" class="detail-btn px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-                                        <i class="bi bi-eye mr-1"></i>
-                                        Detail
-                                    </button> --}}
                                 </div>
                             </div>
                             
@@ -194,25 +191,19 @@
             function filterStudents(classFilter) {
                 studentCards.forEach(card => {
                     if (classFilter === 'all') {
-                        card.style.display = 'flex';
-                        setTimeout(() => {
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateY(0)';
-                        }, 10);
+                        card.classList.remove('hidden');
+                        card.style.display = '';
+                        card.style.opacity = '';
+                        card.style.transform = '';
                     } else {
                         const cardClass = card.getAttribute('data-class');
                         if (cardClass === classFilter) {
-                            card.style.display = 'flex';
-                            setTimeout(() => {
-                                card.style.opacity = '1';
-                                card.style.transform = 'translateY(0)';
-                            }, 10);
+                            card.classList.remove('hidden');
+                            card.style.display = '';
+                            card.style.opacity = '';
+                            card.style.transform = '';
                         } else {
-                            card.style.opacity = '0';
-                            card.style.transform = 'translateY(-10px)';
-                            setTimeout(() => {
-                                card.style.display = 'none';
-                            }, 300);
+                            card.classList.add('hidden');
                         }
                     }
                 });

@@ -71,6 +71,11 @@
                             </span>
                         </th>
                         <th>
+                            <span class="flex items-center">
+                                Tipe
+                            </span>
+                        </th>
+                        <th>
                         </th>
                     </tr>
                 </thead>
@@ -83,6 +88,11 @@
                             <td>{{$data->score}}</td>
                             <td>{{$data->duration}}</td>
                             <td>{{$data->correct_elements}}</td>
+                            @if ($data->type == 'pretest')
+                                <td>Pre-Test</td>
+                            @else
+                                <td>Post-Test</td>
+                            @endif
                             @php
                                 $encryptedModul = Illuminate\Support\Facades\Crypt::encrypt($taskSession->meeting_id);
                                 $encryptedSession = Illuminate\Support\Facades\Crypt::encrypt($data->id);

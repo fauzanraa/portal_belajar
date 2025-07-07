@@ -31,7 +31,6 @@ class ManageAnswerController extends Controller
                 'encrypted_task' => 'required|string'
             ]);
 
-            // Validasi JSON flowchart data
             $decoded = json_decode($request->flowchart_data, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return response()->json([
@@ -40,7 +39,15 @@ class ManageAnswerController extends Controller
                 ], 400);
             }
 
-            // Cari soal
+            $validasiFlow = $this->validateDiagramJson($decoded);
+
+            if ($validasiFlow !== true) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validasiFlow,
+                ], 422);
+            }
+
             $question = TaskQuestion::find($request->soal_id);
             
             if (!$question) {
@@ -66,17 +73,14 @@ class ManageAnswerController extends Controller
                     
                     $imageFileName = 'imgAnswer' . $request->soal_id . '_' . time() . '.png';
                     
-                    // Buat direktori jika belum ada
                     if (!Storage::disk('public')->exists('assets/flowcharts/keyAnswers')) {
                         Storage::disk('public')->makeDirectory('assets/flowcharts/keyAnswers');
                     }
                     
-                    // Hapus gambar lama jika ada
                     if ($question->flowchart_img && Storage::disk('public')->exists('assets/flowcharts/keyAnswers/' . $question->flowchart_img)) {
                         Storage::disk('public')->delete('assets/flowcharts/keyAnswers/' . $question->flowchart_img);
                     }
                     
-                    // Simpan gambar baru
                     $saved = Storage::disk('public')->put('assets/flowcharts/keyAnswers/' . $imageFileName, $decodedImage);
                     
                     if (!$saved) {
@@ -86,7 +90,7 @@ class ManageAnswerController extends Controller
                 } catch (\Exception $e) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Gagal menyimpan gambar: ' . $e->getMessage()
+                        'message' => 'Gagal menyimpan gambar!'
                     ], 500);
                 }
             }
@@ -123,6 +127,44 @@ class ManageAnswerController extends Controller
             ], 500);
         }
     }
+
+    private function validateDiagramJson(array $json): bool|string{
+        $nodes = $json['nodeDataArray'] ?? [];
+        $links = $json['linkDataArray'] ?? [];
+
+        $terminators = array_filter($nodes, fn($n) => ($n['category'] ?? null) === 'Terminator');
+
+        $startNodes = array_filter($terminators, fn($n) => strtolower(trim($n['text'] ?? '')) === 'start');
+        $endNodes = array_filter($terminators, fn($n) => strtolower(trim($n['text'] ?? '')) === 'end');
+
+        if (count($startNodes) !== 1 || count($endNodes) !== 1) {
+            return 'Diagram harus memiliki tepat satu Start dan satu End (kategori Terminator).';
+        }
+
+        $startKey = array_values($startNodes)[0]['key'];
+        $endKey = array_values($endNodes)[0]['key'];
+
+        $incoming = [];
+        $outgoing = [];
+
+        foreach ($links as $link) {
+            $from = $link['from'];
+            $to = $link['to'];
+
+            $outgoing[$from][] = $to;
+            $incoming[$to][] = $from;
+        }
+
+        if (!empty($incoming[$startKey])) {
+            return 'Node Terminator dengan teks "Start" tidak boleh memiliki koneksi masuk.';
+        }
+
+        if (!empty($outgoing[$endKey])) {
+            return 'Node Terminator dengan teks "End" tidak boleh memiliki koneksi keluar.';
+        }
+        return true;
+    }
+
 
     public function editAnswer($id)
     {

@@ -59,38 +59,38 @@
 
     <div class="flex justify-between gap-6 w-full">
         <div class="mt-10 flex-1 max-w-xs">
-            <div class="max-w-sm w-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6 mx-auto" style="max-width: 800px;"> <!-- Menambahkan mx-auto dan max-width -->
-                <div class="flex justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="max-w-sm w-full bg-white rounded-lg shadow-sm p-4 md:p-6 mx-auto" style="max-width: 800px;"> <!-- Menambahkan mx-auto dan max-width -->
+                <div class="flex justify-between pb-4 mb-4 border-b border-gray-200">
                     <div class="flex items-center">
-                        <h5 class="leading-none text-l font-normal text-gray-900 dark:text-white pb-1">Progress Modul</h5>
+                        <h5 class="leading-none text-l font-normal text-gray-900 pb-1">Progress Modul</h5>
                     </div>
                 </div>
 
                 <div id="column-chart"></div>
-                <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between"></div>
+                <div class="grid grid-cols-1 items-center border-gray-200 border-t justify-between"></div>
             </div>
         </div>
 
         <div class="mt-10 flex-1 max-w-xs">
-            <div class="max-w-sm w-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
+            <div class="max-w-sm w-full bg-white rounded-lg shadow-sm p-4 md:p-6">
                 <div class="flex justify-between mb-3">
                     <div class="flex items-center">
-                        <h5 class="text-xl font-normal leading-none text-gray-900 dark:text-white pe-1">Modul 1</h5>
+                        <h5 class="text-xl font-normal leading-none text-gray-900 pe-1">Modul 1</h5>
                     </div>
                 </div>
 
-                <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                <div class="bg-gray-50 p-3 rounded-lg">
                     <div class="grid grid-cols-3 gap-3 mb-2">
-                        <dl class="bg-orange-50 dark:bg-gray-600 rounded-lg flex flex-col items-center justify-center h-[78px]">
-                            <dt class="w-8 h-8 rounded-full bg-orange-100 dark:bg-gray-500 text-orange-600 dark:text-orange-300 text-sm font-medium flex items-center justify-center mb-1">12</dt>
-                            <dd class="text-orange-600 dark:text-orange-300 text-sm font-medium">To do</dd>
+                        <dl class="bg-orange-50 rounded-lg flex flex-col items-center justify-center h-[78px]">
+                            <dt class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 text-sm font-medium flex items-center justify-center mb-1">12</dt>
+                            <dd class="text-orange-600 text-sm font-medium">To do</dd>
                         </dl>
-                        <dl class="bg-teal-50 dark:bg-gray-600 rounded-lg flex flex-col items-center justify-center h-[78px]">
-                            <dt class="w-8 h-8 rounded-full bg-teal-100 dark:bg-gray-500 text-teal-600 dark:text-teal-300 text-sm font-medium flex items-center justify-center mb-1">23</dt>
+                        <dl class="bg-teal-50 rounded-lg flex flex-col items-center justify-center h-[78px]">
+                            <dt class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 dark:text-teal-300 text-sm font-medium flex items-center justify-center mb-1">23</dt>
                             <dd class="text-teal-600 dark:text-teal-300 text-sm font-medium">In progress</dd>
                         </dl>
-                        <dl class="bg-blue-50 dark:bg-gray-600 rounded-lg flex flex-col items-center justify-center h-[78px]">
-                            <dt class="w-8 h-8 rounded-full bg-blue-100 dark:bg-gray-500 text-blue-600 dark:text-blue-300 text-sm font-medium flex items-center justify-center mb-1">64</dt>
+                        <dl class="bg-blue-50 rounded-lg flex flex-col items-center justify-center h-[78px]">
+                            <dt class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 dark:text-blue-300 text-sm font-medium flex items-center justify-center mb-1">64</dt>
                             <dd class="text-blue-600 dark:text-blue-300 text-sm font-medium">Done</dd>
                         </dl>
                     </div>
@@ -102,7 +102,7 @@
         </div>
 
         <div class="mt-10 flex-1 max-w-xs">
-            <div class="max-w-sm w-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
+            <div class="max-w-sm w-full bg-white rounded-lg shadow-sm p-4 md:p-6">
             <div class="flex justify-between mb-5">
                 <div class="grid gap-4 grid-cols-2">
                     <div>

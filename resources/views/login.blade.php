@@ -17,7 +17,7 @@
         @else
         @endif
     </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col font-fira cursor-default">
+    <body class="bg-[#FDFDFC] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col font-fira cursor-default">
         @if(session('success'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -33,21 +33,21 @@
         @endif
         <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
             <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
-                <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
+                <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
                     <h1 class="text-2xl font-medium">Selamat <span class="text-sky-500">Datang</span></h1>
-                    <p class="mb-6 text-gray-700 dark:text-white">Masuk dan lanjutkan eksplorasi anda.</p>
+                    <p class="mb-6 text-gray-700">Masuk dan lanjutkan eksplorasi anda.</p>
                     
                     <form method="POST" action="{{route('postLogin')}}" class="space-y-4">
                         @csrf
                         
                         <div>
                             <label for="username" class="block mb-1 font-medium">Username</label>
-                            <input id="username" name="username" required autofocus class="w-full px-3 py-2 border rounded-sm border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 dark:text-black">
+                            <input id="username" name="username" required autofocus class="w-full px-3 py-2 border rounded-sm border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 ">
                         </div>
 
                         <div>
                             <label for="password" class="block mb-1 font-medium">Password</label>
-                            <input id="password" type="password" name="password" required class="w-full px-3 py-2 border rounded-sm border-[#e3e3e0] bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 dark:text-black">
+                            <input id="password" type="password" name="password" required class="w-full px-3 py-2 border rounded-sm border-[#e3e3e0] bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 ">
                         </div>
                         
                         <div>
@@ -56,7 +56,7 @@
                             </button>
                         </div>
                         <div>
-                            <button class="w-full px-5 py-2 text-black bg-white rounded-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 cursor-pointer dark:bg-[#161615] dark:text-white" onclick="window.location.href='/'">
+                            <button class="w-full px-5 py-2 text-black bg-white rounded-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 cursor-pointer" onclick="window.location.href='/'">
                                 Kembali
                             </button>
                         </div>
@@ -67,7 +67,7 @@
                         <!-- Replace this comment with your image tag once you have the image -->
                         <img src="{{asset('img/bg-login.jpg')}}" alt="Login Image" class="w-full h-full">
                     </div>
-                    <div class="absolute inset-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"></div>
+                    <div class="absolute inset-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)]"></div>
                 </div>
             </main>
         </div>
