@@ -70,14 +70,16 @@
         </a>
         <a href="{{route('manage-scores')}}">
             <div class="sidebar-menu group">
+                <i class="bi bi-people text-black group-hover:text-white"></i>
+                <span class="text-[18px] ml-5 text-black group-hover:text-white">Manajemen Nilai</span>
+            </div>
+        </a>
+        <a href="{{route('manage-progress')}}">
+            <div class="sidebar-menu group">
                 <i class="bi bi-clipboard-data text-black group-hover:text-white"></i>
                 <span class="text-[18px] ml-5 text-black group-hover:text-white">Manajemen Progress</span>
             </div>
         </a>
-        <div class="sidebar-menu group">
-            <i class="bi bi-people text-black group-hover:text-white"></i>
-            <span class="text-[18px] ml-5 text-black group-hover:text-white">Manajemen Hasil</span>
-        </div>
         @elseif (in_array('siswa', $roles))
         <!-- Siswa -->
         <a href="{{route('list-teachers')}}">
