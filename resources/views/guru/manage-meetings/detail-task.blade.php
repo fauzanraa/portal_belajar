@@ -4,10 +4,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
-@push('style')
-    <script src="{{ asset('js/flowchart.js') }}"></script>
-@endpush
-
 @section('content')
     @if(session('success'))
         <script>
@@ -230,57 +226,11 @@
                 </div>
             </div>
         </div>
-
-        <div class="button mt-8 flex justify-self-end">
-            {{-- @php
-                $encryptedMeeting = Illuminate\Support\Facades\Crypt::encrypt($data_materi->meeting_id);
-            @endphp
-            <button type="button" class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer" onclick="window.location.href='{{ route('manage-materials', ['id' => $encryptedMeeting]) }}'">
-                <i class="bi bi-caret-left mr-1"></i> Kembali
-            </button> --}}
-        </div>
-    </div>
-
-    <div id="add-material-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div class="relative p-4 w-full max-w-md max-h-full">
-            <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-                <!-- Modal header -->
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        Tambah file materi
-                    </h3>
-                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="add-material-modal">
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-                <!-- Modal body -->
-                <div class="p-4 md:p-5">
-                    @php
-                        // $encryptedId = Illuminate\Support\Facades\Crypt::encrypt($data_materi->id);
-                    @endphp
-                    {{-- <form class="space-y-4" action="{{route('file-materials', ['id' => $encryptedId])}}" method="POST" enctype="multipart/form-data"> --}}
-                        @csrf
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-900" for="file_input">Berkas Materi</label>
-                            <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" aria-describedby="file_input_help" id="file_input" name="file_material" type="file">
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Pdf (max. 10mb)</p>
-                        </div>
-                        <button type="submit" class="w-full text-white mt-5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Simpan</button>
-                    </form>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="edit-task-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
-            <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-                <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                         Edit tugas
@@ -292,7 +242,6 @@
                         <span class="sr-only">Close modal</span>
                     </button>
                 </div>
-                <!-- Modal body -->
                 <div class="p-4 md:p-5">
                     <form class="space-y-4" action="{{route('update-tasks', ['id' => $dataTugas->id])}}" method="POST">
                         @csrf
@@ -362,7 +311,6 @@
         </div>
     </div>
 
-    <!-- Component Settings Modal -->
     <div id="component-settings-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-2xl max-h-full">
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
@@ -431,9 +379,7 @@
 
     <div id="flowchart-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-4xl max-h-full">
-            <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
-                <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                         Kunci Jawaban Flowchart
@@ -445,7 +391,6 @@
                         <span class="sr-only">Close modal</span>
                     </button>
                 </div>
-                <!-- Modal body -->
                 <div class="p-4 md:p-5">
                     <div id="flowchart-container" class="w-full h-96 border border-gray-300 rounded-lg overflow-auto bg-gray-50 flex items-center justify-center">
                         <img src="{{ asset('storage/assets/flowcharts/correctAnswer/' . $data->flowchart_img) }}"  
@@ -541,6 +486,48 @@
             document.getElementById('edit-task-modal').classList.add('hidden');
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to all answer buttons
+            const answerButtons = document.querySelectorAll('.view-answer-btn');
+            
+            answerButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const taskId = this.getAttribute('data-task-id');
+                    const answerData = this.getAttribute('data-answer');
+                    
+                    showFlowchartModal(taskId, answerData);
+                });
+            });
+        });
+
+        document.getElementById('component-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const components = formData.getAll('components[]');
+            
+            fetch(`{{ route("update-components", $dataTugas->id) }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ components: components })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage('Berhasil menambah data!');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showErrorMessage(data.message || 'Gagal menambah data!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
         function showConfirmation(url) {
             Swal.fire({
                 title: 'Perhatian!!!',
@@ -563,10 +550,8 @@
             const modal = document.getElementById('flowchart-modal');
             const container = document.getElementById('flowchart-container');
 
-            // Bersihkan isi sebelumnya
             container.innerHTML = '';
 
-            // Buat elemen gambar
             const img = document.createElement('img');
             img.src = imageUrl;
             img.alt = 'Flowchart Siswa';
@@ -574,7 +559,6 @@
 
             container.appendChild(img);
 
-            // Tampilkan modal
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
@@ -584,6 +568,5 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
-
     </script>
 @endsection

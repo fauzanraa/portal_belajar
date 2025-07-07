@@ -281,15 +281,6 @@ class StudentAnswerController extends Controller
         ->where('student_id', $studentId)
         ->get();
 
-        // $timeSaved = $taskSession->duration - $studentSession->duration;
-        // $timeBonus = 0;
-        // if ($timeSaved > 0 && $taskSession->duration > 0) {
-        //     $timeBonus = ($timeSaved / $taskSession->duration) * 100;
-        // }
-        // $finalScore = $studentSession->score + $timeBonus;
-        // $finalScore = min($finalScore, 100);
-        // $rasioError = round(100 - $finalScore, 2);
-
         $ratioError = (($studentSession->total_elements - $studentSession->correct_elements) / $studentSession->total_elements) * 100;
 
         $taskPreTest = TaskSession::with('studentTaskSession')

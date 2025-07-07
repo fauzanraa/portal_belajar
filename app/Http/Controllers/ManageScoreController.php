@@ -32,11 +32,13 @@ class ManageScoreController extends Controller
 
         $dataSiswa = StudentTaskSession::join('students', 'student_id', '=', 'students.id')
         ->join('classrooms', 'students.class_id', '=', 'classrooms.id')
+        ->join('task_sessions', 'task_sessions.id', '=', 'student_task_sessions.task_session_id')
         ->where('task_session_id', $taskSession->id)
         ->select(
             'student_task_sessions.*', 
             'students.name',
             'classrooms.class_name',
+            'task_sessions.type',
             )
         ->get();
 

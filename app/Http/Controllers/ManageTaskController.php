@@ -64,7 +64,7 @@ class ManageTaskController extends Controller
                     'component_name' => $componentName,
                     'is_enabled' => true,
                     'created_at' => now(),
-                    'updated_at' => now(),
+                    'updated_at' => now()
                 ];
             }
 

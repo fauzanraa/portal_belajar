@@ -14,7 +14,7 @@
         <div class="w-full mb-6">
             <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                 <div class="flex items-center mb-4">
-                    <i class="bi bi-diagram-3 text-3xl text-blue-500 mr-3"></i>
+                    <i class="bi bi-grid-3x3-gap-fill text-3xl text-blue-500 mr-3"></i>
                     <h2 class="text-2xl font-bold text-gray-800">Soal</h2>
                 </div>
                 <div class="bg-blue-50 rounded-lg p-4">
@@ -65,7 +65,7 @@
 
                 <button onclick="event.preventDefault(); showConfirmation(saveFlowchartToDatabase)" class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                     <div class="flex items-center justify-center">
-                        <i class="bi bi-cloud-upload text-lg mr-2"></i>
+                        <i class="bi bi-floppy-fill mr-2"></i>
                         <span>Simpan</span>
                     </div>
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
@@ -93,7 +93,6 @@
     </div>
 
     <style>
-        /* Custom animations */
         @keyframes pulse-border {
             0%, 100% { border-color: #e5e7eb; }
             50% { border-color: #6366f1; }
@@ -103,7 +102,6 @@
             animation: pulse-border 2s ease-in-out infinite;
         }
         
-        /* Hover effects for diagram area */
         #myDiagramDiv:hover {
             box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
         }
@@ -114,7 +112,6 @@
     </style>
 
     <script>
-        // Progress bar animation
         function updateProgress() {
             const progressBar = document.getElementById('progressBar');
             const nodes = myDiagram.model.nodeDataArray.length;
@@ -122,7 +119,6 @@
             progressBar.style.width = progress + '%';
         }
 
-        // Help function
         function showHelp() {
             Swal.fire({
                 title: 'Panduan',
@@ -139,14 +135,13 @@
             });
         }
 
-        // Auto-save functionality
         setInterval(() => {
             if (typeof myDiagram !== 'undefined' && myDiagram.model.nodeDataArray.length > 0) {
                 updateProgress();
                 // Auto-save logic here
                 console.log('Auto-saving...');
             }
-        }, 30000); // Auto-save every 30 seconds
+        }, 30000); 
     </script>
 @endsection
 
@@ -160,16 +155,6 @@
 
     <script id="code">
       let allowedComponents = @json($pengaturanKomponen ?? []);
-
-      // if (allowedComponents.length === 1 && typeof allowedComponents[0] === 'string') {
-      //   try {
-      //     allowedComponents = JSON.parse(allowedComponents[0]);
-      //   } catch (e) {
-      //     console.error('Error parsing allowedComponents:', e);
-      //     allowedComponents = [];
-      //   }
-      // }
-      // console.log(allowedComponents);
 
       function init() {
           if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -677,29 +662,29 @@
           myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
       }
       
-      function makeSVG() {
-          var svg = myDiagram.makeSvg({
-            scale: 0.5
-          });
-          svg.style.border = "1px solid black";
-          obj = document.getElementById("SVGArea");
-          obj.appendChild(svg);
-          if (obj.children.length > 0) {
-            obj.replaceChild(svg, obj.children[0]);
-          }
-      }
+      // function makeSVG() {
+      //     var svg = myDiagram.makeSvg({
+      //       scale: 0.5
+      //     });
+      //     svg.style.border = "1px solid black";
+      //     obj = document.getElementById("SVGArea");
+      //     obj.appendChild(svg);
+      //     if (obj.children.length > 0) {
+      //       obj.replaceChild(svg, obj.children[0]);
+      //     }
+      // }
       
-      function downloadSVG() {
-          var svg = myDiagram.makeSvg({
-            scale: 1.0
-          });
-          var svgBlob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
-          var svgUrl = URL.createObjectURL(svgBlob);
-          var link = document.createElement("a");
-          link.href = svgUrl;
-          link.download = "flowchart.svg";
-          link.click();
-      }
+      // function downloadSVG() {
+      //     var svg = myDiagram.makeSvg({
+      //       scale: 1.0
+      //     });
+      //     var svgBlob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
+      //     var svgUrl = URL.createObjectURL(svgBlob);
+      //     var link = document.createElement("a");
+      //     link.href = svgUrl;
+      //     link.download = "flowchart.svg";
+      //     link.click();
+      // }
 
       function showSuccessMessage(message) {
         const notification = document.createElement('div');
@@ -772,13 +757,10 @@
       }  
 
       function saveFlowchartToDatabase() {
-          // Simpan model saat ini ke JSON
           save();
           
-          // Ambil JSON data
           const jsonText = document.getElementById('mySavedModel').value;
           
-          // Validasi JSON
           try {
               JSON.parse(jsonText);
           } catch (e) {
@@ -786,7 +768,6 @@
               return;
           }
           
-          // Validasi apakah ada data
           if (!jsonText || jsonText.trim() === '') {
               alert('Tidak ada data flowchart untuk disimpan!');
               return;
@@ -798,13 +779,11 @@
               type: "image/png"
           });
           
-          // Update button state
           const saveButton = event.target;
           const originalText = saveButton.innerHTML;
           saveButton.innerHTML = 'Menyimpan...';
           saveButton.disabled = true;
           
-          // Siapkan data untuk dikirim
           const requestData = {
               soal_id: {{ $data_soal->id }},
               flowchart_data: jsonText,
@@ -812,7 +791,6 @@
               encrypted_task: '{{ $encryptedTask }}'
           };
           
-          // Kirim ke server
           fetch('{{ route("store-correct-answer", $encryptedQuestion) }}', {
               method: 'POST',
               headers: {
@@ -827,13 +805,11 @@
               if (data.success) {
                   showSuccessMessage('Flowchart berhasil disimpan! Mengalihkan...');
                   
-                  // Langsung redirect tanpa delay dan tanpa display JSON
                   setTimeout(() => {
                       window.location.href = '{{ route("detail-tasks", ["id" => $encryptedTask]) }}';
                   }, 1000);
               } else {
                   showErrorMessage('Gagal menyimpan: ' + (data.message || 'Terjadi kesalahan'));
-                  // Kembalikan button ke state normal jika error
                   saveButton.innerHTML = originalText;
                   saveButton.disabled = false;
               }
@@ -841,7 +817,6 @@
           .catch(error => {
               console.error('Error:', error);
               showErrorMessage('Terjadi kesalahan saat menyimpan flowchart');
-              // Kembalikan button ke state normal jika error
               saveButton.innerHTML = originalText;
               saveButton.disabled = false;
           });
@@ -850,42 +825,5 @@
       $(function(){
           $('#sample').trigger('onload');
       });
-    </script>
-
-    <script>
-      function showJson() {
-          // Simpan model saat ini ke JSON
-          save();
-          
-          // Tampilkan modal atau area JSON
-          const jsonArea = document.getElementById('jsonDisplayArea');
-          jsonArea.classList.remove('hidden');
-          
-          // Scroll ke area JSON
-          jsonArea.scrollIntoView({ behavior: 'smooth' });
-      }
-      function copyJson() {
-          const jsonText = document.getElementById('mySavedModel').value;
-          navigator.clipboard.writeText(jsonText).then(() => {
-              alert('JSON copied to clipboard!');
-          });
-      }
-      
-      function showJson() {
-          // Simpan model saat ini ke JSON
-          save();
-          
-          // Format JSON untuk tampilan yang lebih baik
-          const jsonText = document.getElementById('mySavedModel').value;
-          try {
-              const formattedJson = JSON.stringify(JSON.parse(jsonText), null, 2);
-              document.getElementById('jsonDisplay').textContent = formattedJson;
-          } catch (e) {
-              document.getElementById('jsonDisplay').textContent = jsonText;
-          }
-          
-          // Tampilkan area JSON
-          document.getElementById('jsonDisplayArea').classList.remove('hidden');
-      }
     </script>
 @endsection
