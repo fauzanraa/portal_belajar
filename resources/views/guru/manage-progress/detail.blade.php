@@ -18,7 +18,11 @@
                         <i class="bi bi-trophy text-blue-500 text-2xl"></i>
                     </div>
                     <div>
+<<<<<<< HEAD
                         <h2 class="text-xl font-bold text-white">List Tugas</h2>
+=======
+                        <h2 class="text-xl font-bold text-white">List Nilai</h2>
+>>>>>>> fa0b362c2e89718c7c7fe3fcc44861ea3af37182
                     </div>
                 </div>
             </div>
