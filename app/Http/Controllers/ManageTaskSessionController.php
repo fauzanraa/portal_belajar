@@ -71,7 +71,10 @@ class ManageTaskSessionController extends Controller
                         'score' => 0,
                         'status' => 'in_progress',
                         'duration' => 0,
+                        'total_elements' => 0,
+                        'correct_elements' => 0,
                         'finished_at' => null,
+                        'flowchart_img' => null,
                         'access' => $type
                     ]);
                 }
