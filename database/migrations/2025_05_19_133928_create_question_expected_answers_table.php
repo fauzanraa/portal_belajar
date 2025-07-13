@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('component_settings', function (Blueprint $table) {
+        Schema::create('question_expected_answers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('task_session_id');
-            $table->string('component_name');
-            $table->boolean('is_enabled')->default(false);
+            $table->unsignedBigInteger('task_session_id')->nullable();
+            $table->unsignedBigInteger('task_question_id')->nulllable();;
+            $table->json('answer')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('component_settings');
+        Schema::dropIfExists('question_expected_answers');
     }
 };

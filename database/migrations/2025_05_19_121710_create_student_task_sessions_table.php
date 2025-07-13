@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('task_session_id');
             $table->string('student_id');
-            $table->decimal('score', 5, 2);
+            $table->decimal('score', 5, 2)->nullable();
             $table->enum('status', ['in_progress', 'finished']);
-            $table->integer('duration');
+            $table->integer('duration')->nullable();
             $table->integer('total_elements')->nullable();
             $table->integer('correct_elements')->nullable();
             $table->timestamp('finished_at')->nullable();
