@@ -11,7 +11,6 @@
 @section('content')
     <div class="container mx-auto px-4 py-8 min-h-screen">
         <div class="bg-white rounded-2xl shadow-2xl mb-8 border border-gray-200 overflow-hidden">
-            <!-- Card Header -->
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
@@ -24,9 +23,7 @@
                 </div>
             </div>
 
-            <!-- Question Content Section -->
             <div class="p-8">
-                <!-- Question Display -->
                 <div class="mb-8">
                   <div class="flex items-center justify-between mb-6">
                       <div class="flex items-center">
@@ -38,7 +35,6 @@
                           </div>
                       </div>
                   </div>
-                    <!-- Question Content Container -->
                     <div id="questionContent" class="min-h-[250px] bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 border-l-4 border-blue-500 shadow-sm">
                         @php $questionIndex = 1; @endphp
                         @foreach ($questionTask as $data)
@@ -47,9 +43,6 @@
                                 data-task-id="{{ $sessionTask->id }}"
                                 data-question-id="{{ $data->id }}">
                                 <div class="flex items-start">
-                                    {{-- <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1 flex-shrink-0">
-                                        {{ $questionIndex }}
-                                    </div> --}}
                                     <div class="flex-1">
                                         <p class="text-gray-800 leading-relaxed text-lg">{{ $data->question }}</p>
                                     </div>
@@ -57,14 +50,10 @@
                             </div>
                             @php $questionIndex++; @endphp
                         @endforeach
-                        {{-- @foreach ($sessionTask as $task)
-                        @endforeach --}}
                     </div>
                 </div>
 
-                <!-- Question Navigation Section -->
                 <div class="border-t border-gray-200 pt-6">
-                    <!-- Section Title -->
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center">
                             <div class="bg-indigo-100 rounded-lg p-2 mr-3">
@@ -76,15 +65,12 @@
                         </div>
                     </div>
 
-                    <!-- Scrollable Question Numbers -->
                     <div class="relative mb-6">
-                        <!-- Left Scroll Button -->
                         <button id="scrollLeft" 
                                 class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 z-20 bg-white shadow-md rounded-full p-2 text-gray-500 hover:text-gray-700 transition-colors duration-200 border border-gray-200 opacity-0 pointer-events-none">
                             <i class="bi bi-chevron-left"></i>
                         </button>
 
-                        <!-- Question Numbers Container -->
                         <div class="flex justify-center">
                             <div class="overflow-hidden max-w-md">
                                 <div id="questionScroller" 
@@ -98,32 +84,25 @@
                                               data-question-id="{{ $data->id }}"
                                               data-answered="false">
                                           
-                                          <!-- Question Number -->
                                           <span>{{ $questionCount }}</span>
                                           
-                                          <!-- Answered Check Mark -->
                                           <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full opacity-0 transition-opacity duration-200 flex items-center justify-center answered-indicator">
                                               <i class="bi bi-check text-white text-xs"></i>
                                           </div>
                                       </button>
                                         @php $questionCount++; @endphp
                                     @endforeach
-                                    {{-- @foreach ($sessionTask as $task)
-                                    @endforeach --}}
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Right Scroll Button -->
                         <button id="scrollRight" 
                                 class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 z-20 bg-white shadow-md rounded-full p-2 text-gray-500 hover:text-gray-700 transition-colors duration-200 border border-gray-200 opacity-0 pointer-events-none">
                             <i class="bi bi-chevron-right"></i>
                         </button>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="flex items-center justify-center gap-4">
-                      <!-- Previous Button -->
                       <button id="prevQuestion" 
                               class="flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group transform hover:scale-105 disabled:hover:scale-100 shadow-sm hover:shadow-md"
                               disabled>
@@ -131,14 +110,6 @@
                           <span class="font-medium">Sebelumnya</span>
                       </button>
 
-                      <button onclick="event.preventDefault(); showConfirmation(saveFlowchartToDatabase)" class="group relative overflow-hidden bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                          <div class="flex items-center justify-center">
-                              <span>Selesai</span>
-                          </div>
-                          <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      </button>
-
-                      <!-- Next Button -->
                       <button id="nextQuestion" 
                               class="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group transform hover:scale-105 disabled:hover:scale-100 shadow-lg hover:shadow-xl">
                           <span class="font-medium">Selanjutnya</span>
@@ -151,7 +122,6 @@
         </div>
 
         <div class="flex flex-col lg:flex-row gap-6">
-            <!-- Komponen Palette -->
             <div class="lg:w-1/4 w-full">
                 <div class="bg-white rounded-xl shadow-lg p-4 h-[600px] border border-gray-200">
                     <div class="flex items-center mb-4">
@@ -162,7 +132,6 @@
                 </div>
             </div>
             
-            <!-- Area Gambar -->
             <div class="lg:w-3/4 w-full flex flex-col gap-4">
                 <div class="bg-white rounded-xl shadow-lg p-4 h-full border border-gray-200">
                     <div class="flex items-center justify-between mb-4">
@@ -172,26 +141,23 @@
                         </div>
                     </div>
                     <div id="myDiagramDiv" class="border-2 border-dashed border-gray-300 rounded-lg h-[520px] bg-gradient-to-br from-gray-50 to-white hover:border-green-300 transition-colors duration-300 relative overflow-hidden">
-                        <!-- Grid Pattern Background -->
                         <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
                     </div>
                 </div>  
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        {{-- <div class="mt-6 bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+        <div class="mt-6 bg-white rounded-xl shadow-lg p-6 border border-gray-200">
             <div class="grid gap-4">
-                <button onclick="saveFlowchartToDatabase()" class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <button onclick="event.preventDefault(); showConfirmation(saveFlowchartToDatabase)" class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                     <div class="flex items-center justify-center">
                         <span>Selesai</span>
                     </div>
                     <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 </button>
             </div>
-        </div> --}}
+        </div>
 
-        <!-- JSON Storage (Hidden) -->
         <div class="hidden mt-8">
             <h3 class="text-lg font-semibold text-gray-700 mb-2">Model JSON:</h3>
             <textarea id="mySavedModel" class="w-full h-64 p-2 border border-gray-300 rounded-md bg-gray-50">
@@ -202,7 +168,6 @@
             </textarea>
         </div>
 
-        <!-- Floating Help Button -->
         <div class="fixed bottom-6 right-6 z-50">
             <button class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110" onclick="showHelp()">
                 <i class="bi bi-person-raised-hand"></i>
@@ -771,10 +736,14 @@
                   new go.Binding("text").makeTwoWay())
               ),
               // four named ports, one on each side:
-              makePort("T", go.Spot.Top, false, true),
-              makePort("L", go.Spot.Left, true, true),
-              makePort("R", go.Spot.Right, true, true),
-              makePort("B", go.Spot.Bottom, true, false)
+                makePort("T", go.Spot.Top, false, true),
+                makePort("TL", go.Spot.TopLeft, true, true),      
+                makePort("TR", go.Spot.TopRight, true, true),     
+                makePort("L", go.Spot.Left, true, true),
+                makePort("R", go.Spot.Right, true, true),
+                makePort("BL", go.Spot.BottomLeft, true, true),   
+                makePort("BR", go.Spot.BottomRight, true, true),  
+                makePort("B", go.Spot.Bottom, true, false)
           ));
           myDiagram.nodeTemplateMap.add("Terminator",
             $(go.Node, "Spot", nodeStyle(),
@@ -1032,77 +1001,131 @@
                   },
                   new go.Binding("text").makeTwoWay())
               ),
-              // Port untuk koneksi
-              makePort("T", go.Spot.Top, false, true),
-              makePort("L", go.Spot.Left, true, true),
-              makePort("R", go.Spot.Right, true, true),
-              makePort("B", go.Spot.Bottom, true, false)
+              makePort("T", go.Spot.Top, true, true),           
+              makePort("TR", go.Spot.TopRight, true, true),     
+              makePort("R", go.Spot.Right, true, true),         
+              makePort("BR", go.Spot.BottomRight, true, true),  
+              makePort("B", go.Spot.Bottom, true, true),        
+              makePort("BL", go.Spot.BottomLeft, true, true),   
+              makePort("L", go.Spot.Left, true, true),          
+              makePort("TL", go.Spot.TopLeft, true, true)
           ));
 
           // replace the default Link template in the linkTemplateMap
           myDiagram.linkTemplate =
-            $(go.Link,  // the whole link panel
-              {
-                routing: go.Link.AvoidsNodes,
-                curve: go.Link.JumpOver,
-                corner: 5, toShortLength: 4,
-                relinkableFrom: true,
-                relinkableTo: true,
-                reshapable: true,
-                resegmentable: true,
-                // mouse-overs subtly highlight links:
-                mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-                mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; }
-              },
-              new go.Binding("points").makeTwoWay(),
-              $(go.Shape,  // the highlight shape, normally transparent
-                { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
-              $(go.Shape,  // the link path shape
-                { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
-              $(go.Shape,  // the arrowhead
-                { toArrow: "standard", stroke: null, fill: "gray"}),
-              $(go.Panel, "Auto",  // the link label, normally not visible
-                { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5},
-                new go.Binding("visible", "visible").makeTwoWay(),
-                $(go.Shape, "RoundedRectangle",  // the label shape
-                  { fill: "#F8F8F8", stroke: null }),
-                $(go.TextBlock, "Yes",  // the label
-                  {
-                    textAlign: "center",
-                    font: "10pt helvetica, arial, sans-serif",
-                    stroke: "#333333",
-                    editable: true
-                  },
-                  new go.Binding("text").makeTwoWay())
-              )
+            $(go.Link,
+                {
+                    routing: go.Link.AvoidsNodes,
+                    curve: go.Link.JumpOver,
+                    corner: 5, 
+                    toShortLength: 4,
+                    relinkableFrom: true,
+                    relinkableTo: true,
+                    reshapable: true,
+                    resegmentable: true,
+                    // PENTING: Binding yang eksplisit untuk port
+                    fromPortId: "",
+                    toPortId: "",
+                    mouseEnter: function(e, link) { 
+                        link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; 
+                    },
+                    mouseLeave: function(e, link) { 
+                        link.findObject("HIGHLIGHT").stroke = "transparent"; 
+                    }
+                },
+                // Binding eksplisit untuk mempertahankan port connections
+                new go.Binding("fromPortId", "fromPort"),
+                new go.Binding("toPortId", "toPort"),
+                new go.Binding("points").makeTwoWay(),
+                $(go.Shape,  // highlight shape
+                    { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
+                $(go.Shape,  // link path shape
+                    { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
+                $(go.Shape,  // arrowhead
+                    { toArrow: "standard", stroke: null, fill: "gray"}),
+                $(go.Panel, "Auto",  // link label
+                    { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5},
+                    new go.Binding("visible", "visible").makeTwoWay(),
+                    $(go.Shape, "RoundedRectangle",
+                        { fill: "#F8F8F8", stroke: null }),
+                    $(go.TextBlock, "Yes",
+                        {
+                            textAlign: "center",
+                            font: "10pt helvetica, arial, sans-serif",
+                            stroke: "#333333"
+                        },
+                        new go.Binding("text").makeTwoWay())
+                )
             );
           // Make link labels visible if coming out of a "conditional" node.
           // This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
           function showLinkLabel(e) {
             var label = e.subject.findObject("LABEL");
-            if (label !== null) label.visible = (e.subject.fromNode.data.figure === "Diamond");
+            if (label !== null) {
+                var fromNode = e.subject.fromNode;
+                
+                // Hanya tampilkan label untuk node Decision (Diamond)
+                if (fromNode.data.figure === "Diamond") {
+                    label.visible = true;
+                    
+                    // Hitung jumlah link yang keluar dari node ini
+                    var outgoingLinks = [];
+                    fromNode.findLinksOutOf().each(function(link) {
+                        outgoingLinks.push(link);
+                    });
+                    
+                    // Tentukan teks berdasarkan urutan link
+                    var linkIndex = outgoingLinks.indexOf(e.subject);
+                    var labelText = "";
+                    
+                    if (linkIndex === 0) {
+                        labelText = "Yes";
+                    } else if (linkIndex === 1) {
+                        labelText = "No";
+                    } else {
+                        labelText = "Option " + (linkIndex + 1);
+                    }
+                    
+                    // Update teks label
+                    myDiagram.model.setDataProperty(e.subject.data, "text", labelText);
+                } else {
+                    label.visible = false;
+                }
+            }
           }
           // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
-          myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
-          myDiagram.toolManager.relinkingTool.temporaryLink.routing = go.Link.Orthogonal;
+        //   myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
+        //   myDiagram.toolManager.relinkingTool.temporaryLink.routing = go.Link.Orthogonal;
+          myDiagram.toolManager.linkingTool = new go.LinkingTool();
+          myDiagram.toolManager.linkingTool.portGravity = 1; // Mengurangi "magnet effect"
+          myDiagram.toolManager.linkingTool.archetypeLinkData = { routing: go.Link.Orthogonal };
+
+            myDiagram.toolManager.linkingTool.insertLink = function(fromnode, fromport, tonode, toport) {
+                var newlink = go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
+                
+                // Pastikan link menggunakan port yang benar-benar dipilih user
+                if (newlink !== null) {
+                    myDiagram.model.setFromKeyForLinkData(newlink.data, fromnode.data.key);
+                    myDiagram.model.setToKeyForLinkData(newlink.data, tonode.data.key);
+                    myDiagram.model.setDataProperty(newlink.data, "fromPort", fromport.portId);
+                    myDiagram.model.setDataProperty(newlink.data, "toPort", toport.portId);
+                }
+                
+                return newlink;
+            };
+
           load();  // load an initial diagram from some JSON text
           // initialize the Palette that is on the left side of the page
           const paletteNodeDataArray = [];
 
-          if (allowedComponents.includes('OnPageReference')) {
-              paletteNodeDataArray.push({ category: "OnPageReference", text: "" });
-          }
-          if (allowedComponents.includes('OffPageReference')) {
-              paletteNodeDataArray.push({ category: "OffPageReference", text: "" });
-          }
           if (allowedComponents.includes('Terminator')) {
               paletteNodeDataArray.push({ category: "Terminator", text: "Start/End"});
           }
           if (allowedComponents.includes('Process')) {
-              paletteNodeDataArray.push({ text: "Process" });
+              paletteNodeDataArray.push({ category: "Process", text: "Process" });
           }
           if (allowedComponents.includes('Decision')) {
-              paletteNodeDataArray.push({ text: "Decision", figure: "Diamond" });
+              paletteNodeDataArray.push({ category: "Decision", text: "Decision", figure: "Diamond" });
           }
           if (allowedComponents.includes('InputOutput')) {
               paletteNodeDataArray.push({ category: "InputOutput", text: "Input/Output" });
@@ -1121,6 +1144,12 @@
           }
           if (allowedComponents.includes('Preparation')) {
               paletteNodeDataArray.push({ category: "Preparation", text: "Preparation" });
+          }
+          if (allowedComponents.includes('OnPageReference')) {
+              paletteNodeDataArray.push({ category: "OnPageReference", text: "" });
+          }
+          if (allowedComponents.includes('OffPageReference')) {
+              paletteNodeDataArray.push({ category: "OffPageReference", text: "" });
           }
 
           myPalette =
@@ -1154,13 +1183,23 @@
           }, 100);
       }
       
-      function showPorts(node, show) {
-          var diagram = node.diagram;
-          if (!diagram || diagram.isReadOnly || !diagram.allowLink) return;
-          node.ports.each(function(port) {
-              port.stroke = (show ? "white" : null);
+        function showPorts(node, show) {
+            var diagram = node.diagram;
+            if (!diagram || diagram.isReadOnly || !diagram.allowLink) return;
+
+            node.ports.each(function(port) {
+                if (show) {
+                    // Tampilkan port dengan visual yang lebih jelas
+                    port.stroke = "white";
+                    port.strokeWidth = 3;
+                    port.fill = "rgba(255, 255, 255, 0.3)";
+                } else {
+                    port.stroke = null;
+                    port.strokeWidth = 1;
+                    port.fill = "transparent";
+                }
             });
-      }
+        }
       
       function save() {
           document.getElementById("mySavedModel").value = myDiagram.model.toJson();
@@ -1413,7 +1452,7 @@
                 duration: duration,
                 student_id: @json($studentId),
                 flowchart_data: JSON.stringify(allAnswers[0]),
-                flowchart_images: allImages
+                flowchart_images: allImages ?? null
             };
 
             // Kirim ke server
@@ -1462,41 +1501,4 @@
           $('#sample').trigger('onload');
       });
     </script>
-
-    {{-- <script>
-      function showJson() {
-          // Simpan model saat ini ke JSON
-          save();
-          
-          // Tampilkan modal atau area JSON
-          const jsonArea = document.getElementById('jsonDisplayArea');
-          jsonArea.classList.remove('hidden');
-          
-          // Scroll ke area JSON
-          jsonArea.scrollIntoView({ behavior: 'smooth' });
-      }
-      function copyJson() {
-          const jsonText = document.getElementById('mySavedModel').value;
-          navigator.clipboard.writeText(jsonText).then(() => {
-              alert('JSON copied to clipboard!');
-          });
-      }
-      
-      function showJson() {
-          // Simpan model saat ini ke JSON
-          save();
-          
-          // Format JSON untuk tampilan yang lebih baik
-          const jsonText = document.getElementById('mySavedModel').value;
-          try {
-              const formattedJson = JSON.stringify(JSON.parse(jsonText), null, 2);
-              document.getElementById('jsonDisplay').textContent = formattedJson;
-          } catch (e) {
-              document.getElementById('jsonDisplay').textContent = jsonText;
-          }
-          
-          // Tampilkan area JSON
-          document.getElementById('jsonDisplayArea').classList.remove('hidden');
-      }
-    </script> --}}
 @endsection

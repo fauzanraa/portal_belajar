@@ -38,25 +38,6 @@ class StudentAnswerController extends Controller
         $pengaturanKomponen = ComponentSetting::where('task_session_id', $sessionTask->task_session_id)
                 ->where('is_enabled', true)
                 ->pluck('component_name');
-        
-        // foreach ($sessionTask as $task) {
-        //     if ($task->taskSession) {
-        //         $teacher = Teacher::where('nip', $task->taskSession->created_by)->first();
-        //         $encryptedTeacher = encrypt($teacher->nip);
-        //     }
-        // }
-
-        // foreach ($sessionTask as $task) {
-        //     if ($task->taskSession) {
-        //         $encryptedMeeting = encrypt($task->taskSession->id);
-        //     }
-        // }
-
-        // foreach ($sessionTask as $task) {
-        //     $pengaturanKomponen = ComponentSetting::where('task_session_id', $task->task_session_id)
-        //         ->where('is_enabled', true)
-        //         ->pluck('component_name');
-        // }
 
         return view('siswa.draw', compact('sessionTask', 'studentId', 'questionTask', 'encryptedTeacher', 'encryptedMeeting', 'encryptedStudent', 'pengaturanKomponen'));
     }
@@ -77,51 +58,27 @@ class StudentAnswerController extends Controller
             $savedAnswers = [];
             $totalScore = 0;
             $questionCount = 0;
-
-            // Process gambar dan buat mapping - LOGIKA SEDERHANA
             $imageMap = [];
-            if ($request->has('flowchart_images') && is_array($request->flowchart_images)) {
-                foreach ($request->flowchart_images as $imageData) {
-                    if (isset($imageData['question_id']) && isset($imageData['flowchart_image']) && !empty($imageData['flowchart_image'])) {
-                        $questionId = $imageData['question_id'];
-                        
-                        try {
-                            $imageDataProcessed = $imageData['flowchart_image'];
-                            if (strpos($imageDataProcessed, 'data:image') === 0) {
-                                $imageDataProcessed = preg_replace('/^data:image\/\w+;base64,/', '', $imageDataProcessed);
-                            }
-                            
-                            $decodedImage = base64_decode($imageDataProcessed);
-                            
-                            if ($decodedImage === false) {
-                                throw new \Exception('Invalid base64 image data');
-                            }
-                            
-                            $imageFileName = 'studentAnswer' . $request->student_id . '_' . $questionId . '_' . time() . '.png';
-                            
-                            if (!Storage::disk('public')->exists('assets/flowcharts/studentAnswers')) {
-                                Storage::disk('public')->makeDirectory('assets/flowcharts/studentAnswers');
-                            }
+            $totalCorrectElements = 0;
+            $totalExpectedElements = 0;
 
-                            // Simpan gambar
-                            $saved = Storage::disk('public')->put('assets/flowcharts/studentAnswers/' . $imageFileName, $decodedImage);
-                            
-                            if (!$saved) {
-                                throw new \Exception('Failed to save image file');
-                            }
-                            
-                            $imageMap[$questionId] = $imageFileName;
-                            
-                        } catch (\Exception $e) {
-                            Log::warning('Failed to save image for question ' . $questionId . ': ' . $e->getMessage());
-                            continue;
-                        }
+            foreach ($request->flowchart_images ?? [] as $imageData) {
+                if (!empty($imageData['flowchart_image']) && isset($imageData['question_id'])) {
+                    $filename = 'studentAnswer' . $request->student_id . '_' . $imageData['question_id'] . '_' . time() . '.png';
+                    $imageDataBase64 = preg_replace('/^data:image\/\w+;base64,/', '', $imageData['flowchart_image']);
+                    $decodedImage = base64_decode($imageDataBase64);
+
+                    if ($decodedImage !== false) {
+                        Storage::disk('public')->put("assets/flowcharts/studentAnswers/{$filename}", $decodedImage);
+                        $imageMap[$imageData['question_id']] = $filename;
                     }
                 }
             }
 
             foreach ($request->question_id as $answerData) {
-                $decoded = json_decode($answerData['flowchart_data'], true);
+                $studentAnswerData = json_decode($answerData['flowchart_data'], true);
+                $studentAnswerData = $this->normalizeFlowchartKeys($studentAnswerData);
+
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     return response()->json([
                         'success' => false,
@@ -133,133 +90,154 @@ class StudentAnswerController extends Controller
                 $answer->task_session_id = $id;
                 $answer->task_question_id = $answerData['question_id'];
                 $answer->student_id = $request->student_id;
-                $answer->answer = $answerData['flowchart_data'];
-                
-                // Tambahkan gambar jika ada
-                if (isset($imageMap[$answerData['question_id']])) {
-                    $answer->flowchart_img = $imageMap[$answerData['question_id']];
-                }
-                
+                $answer->answer = json_encode($studentAnswerData);
+                $answer->flowchart_img = $imageMap[$answerData['question_id']] ?? null;
                 $answer->save();
-
                 $savedAnswers[] = $answer;
 
                 $question = TaskQuestion::find($answerData['question_id']);
-                
+
                 if ($question && $question->correct_answer) {
-                    $correctAnswer = $question->correct_answer;
-                    $studentAnswer = $answer->answer;
+                    $correctAnswerData = json_decode($question->correct_answer, true);
 
-                    $correctAnswerData = json_decode($correctAnswer, true);
-                    $studentAnswerData = json_decode($studentAnswer, true);
-
-                    $isStudentAnswerEmpty = empty($studentAnswerData['nodeDataArray']) && empty($studentAnswerData['linkDataArray']);
-
-                    if ($isStudentAnswerEmpty) {
-                        $questionScore = 0;
+                    if (empty($studentAnswerData['nodeDataArray']) && empty($studentAnswerData['linkDataArray'])) {
+                        $score = 0;
                     } else {
-                        
-                        $correctNodes = 0;
-                        $correctLinks = 0;
-                        $totalNodes = count($correctAnswerData['nodeDataArray'] ?? []); 
-                        $totalLinks = count($correctAnswerData['linkDataArray'] ?? []); 
-
-                        if (isset($correctAnswerData['nodeDataArray']) && isset($studentAnswerData['nodeDataArray'])) {
-                            foreach ($correctAnswerData['nodeDataArray'] as $index => $node) {
-                                if (isset($studentAnswerData['nodeDataArray'][$index])) {
-                                    $correctNode = [
-                                        'key' => $node['key'] ?? '',
-                                        'text' => $node['text'] ?? ''
-                                    ];
-                                    $studentNode = [
-                                        'key' => $studentAnswerData['nodeDataArray'][$index]['key'] ?? '',
-                                        'text' => $studentAnswerData['nodeDataArray'][$index]['text'] ?? ''
-                                    ];
-
-                                    if ($correctNode['key'] === $studentNode['key'] && 
-                                        $correctNode['text'] === $studentNode['text']) {
-                                        $correctNodes++;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (isset($correctAnswerData['linkDataArray']) && isset($studentAnswerData['linkDataArray'])) {
-                            foreach ($correctAnswerData['linkDataArray'] as $index => $link) {
-                                if (isset($studentAnswerData['linkDataArray'][$index])) {
-                                    $correctLink = [
-                                        'from' => $link['from'] ?? '',
-                                        'to' => $link['to'] ?? ''
-                                    ];
-                                    $studentLink = [
-                                        'from' => $studentAnswerData['linkDataArray'][$index]['from'] ?? '',
-                                        'to' => $studentAnswerData['linkDataArray'][$index]['to'] ?? ''
-                                    ];
-
-                                    if ($correctLink['from'] === $studentLink['from'] && 
-                                        $correctLink['to'] === $studentLink['to']) {
-                                        $correctLinks++;
-                                    }
-                                }
-                            }
-                        }
-
-                        $correctElements = $correctNodes + $correctLinks;
-                        $totalElements = $totalNodes + $totalLinks;
-                        
-                        if ($totalElements > 0) {
-                            $questionScore = ($correctElements / $totalElements) * 100;
-                            $totalScore += $questionScore;
-                            $questionCount++;
-                        }
+                        [$correctElements, $totalElements] = $this->evaluateFlowchartAnswer($correctAnswerData, $studentAnswerData);
+                        $totalCorrectElements += $correctElements;
+                        $totalExpectedElements += $totalElements;
+                        $score = $totalElements > 0 ? ($correctElements / $totalElements) * 100 : 0;
                     }
+
+                    $totalScore += $score;
+                    $questionCount++;
                 }
             }
 
-            $averageScore = $questionCount > 0 ? $totalScore / $questionCount : 0;
+            $averageScore = $questionCount > 0 ? round($totalScore / $questionCount, 2) : 0;
 
             $taskSession = StudentTaskSession::where('task_session_id', $id)
                 ->where('student_id', $request->student_id)
                 ->first();
-                
+
             if (!$taskSession) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Task session not found'
-                ], 404);
+                return response()->json(['success' => false, 'message' => 'Task session not found'], 404);
             }
 
-            $taskSession->score = round($averageScore, 2);
+            $taskSession->score = $averageScore;
             $taskSession->status = 'finished';
             $taskSession->duration = $request->duration ?? 0;
-            $taskSession->correct_elements = $correctElements;
-            $taskSession->total_elements = $totalElements;
+            $taskSession->total_elements = $totalExpectedElements;
+            $taskSession->correct_elements = $totalCorrectElements;
             $taskSession->finished_at = now();
             $taskSession->save();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Flowchart berhasil disimpan',
+                'message' => 'Jawaban berhasil disimpan',
                 'data' => [
                     'answers_saved' => count($savedAnswers),
                     'images_saved' => count($imageMap),
-                    'average_score' => round($averageScore, 2)
+                    'average_score' => $averageScore
                 ]
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data tidak valid',
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['success' => false, 'message' => 'Data tidak valid', 'errors' => $e->errors()], 422);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan: ' . $e->getMessage()], 500);
         }
+    }
+
+    private function normalizeFlowchartKeys(array $json): array {
+        $nodes = $json['nodeDataArray'] ?? [];
+        $links = $json['linkDataArray'] ?? [];
+
+        $oldToNewKey = [];
+        $newKey = 1;
+
+        foreach ($nodes as &$node) {
+            $oldKey = $node['key'];
+            $oldToNewKey[$oldKey] = $newKey;
+            $node['key'] = $newKey;
+            $newKey++;
+        }
+
+        foreach ($links as &$link) {
+            if (isset($oldToNewKey[$link['from']])) {
+                $link['from'] = $oldToNewKey[$link['from']];
+            }
+            if (isset($oldToNewKey[$link['to']])) {
+                $link['to'] = $oldToNewKey[$link['to']];
+            }
+        }
+
+        return [
+            'nodeDataArray' => $nodes,
+            'linkDataArray' => $links
+        ];
+    }
+
+    private function evaluateFlowchartAnswer(array $expected, array $student): array {
+        $normalizeNodes = fn($arr) => array_map(fn($n) => [
+            'text' => strtolower(trim($n['text'] ?? '')),
+            'category' => strtolower(trim($n['category'] ?? '')),
+        ], $arr);
+
+        $mapLabelByKey = function ($nodes) {
+            $map = [];
+            foreach ($nodes as $n) {
+                $label = strtolower(trim($n['text'] ?? '')) . '|' . strtolower(trim($n['category'] ?? ''));
+                $map[$n['key']] = $label;
+            }
+            return $map;
+        };
+
+        $normalizeLinks = function ($links, $labelMap) {
+            return array_map(function ($l) use ($labelMap) {
+                return [
+                    'from' => $labelMap[$l['from']] ?? 'unknown',
+                    'to' => $labelMap[$l['to']] ?? 'unknown',
+                    'text' => strtolower(trim($l['text'] ?? '')),
+                ];
+            }, $links);
+        };
+
+        $compareItems = fn(array $a, array $b): bool =>
+            $a['text'] === $b['text'] && $a['category'] === $b['category'];
+
+        $compareLinks = fn(array $a, array $b): bool =>
+            $a['from'] === $b['from'] && $a['to'] === $b['to'] && $a['text'] === $b['text'];
+
+        $arrayIntersectSmart = function (array $a, array $b, callable $compareFn): int {
+            $matched = 0;
+            $usedIndexes = [];
+            foreach ($a as $itemA) {
+                foreach ($b as $i => $itemB) {
+                    if (!in_array($i, $usedIndexes) && $compareFn($itemA, $itemB)) {
+                        $matched++;
+                        $usedIndexes[] = $i;
+                        break;
+                    }
+                }
+            }
+            return $matched;
+        };
+
+        $expectedNodes = $normalizeNodes($expected['nodeDataArray'] ?? []);
+        $studentNodes = $normalizeNodes($student['nodeDataArray'] ?? []);
+        $correctNodes = $arrayIntersectSmart($expectedNodes, $studentNodes, $compareItems);
+        $totalNodes = count($expectedNodes);
+
+        $expectedLabelMap = $mapLabelByKey($expected['nodeDataArray'] ?? []);
+        $studentLabelMap = $mapLabelByKey($student['nodeDataArray'] ?? []);
+        $expectedLinks = $normalizeLinks($expected['linkDataArray'] ?? [], $expectedLabelMap);
+        $studentLinks = $normalizeLinks($student['linkDataArray'] ?? [], $studentLabelMap);
+        $correctLinks = $arrayIntersectSmart($expectedLinks, $studentLinks, $compareLinks);
+        $totalLinks = count($expectedLinks);
+
+        return [$correctNodes + $correctLinks, $totalNodes + $totalLinks];
     }
 
     public function summary($id){
@@ -290,7 +268,12 @@ class StudentAnswerController extends Controller
         // $finalScore = min($finalScore, 100);
         // $rasioError = round(100 - $finalScore, 2);
 
-        $ratioError = (($studentSession->total_elements - $studentSession->correct_elements) / $studentSession->total_elements) * 100;
+        if($studentSession->total_elements != 0 && $studentSession->correct_elements != 0) {
+            $ratioError = (($studentSession->total_elements - $studentSession->correct_elements) / $studentSession->total_elements) * 100;
+        } else {
+            $ratioError = 100;
+        }
+            
 
         $taskPreTest = TaskSession::with('studentTaskSession')
         ->where('meeting_id', $taskSession->meeting_id)
