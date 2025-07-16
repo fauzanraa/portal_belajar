@@ -67,7 +67,7 @@ Route::prefix('teacher')->middleware('role:guru')->group(function () {
     Route::get('/manage-materials/{id}', [ManageMaterialController::class, 'index'])->name('detail-materials');
     Route::post('/manage-materials/{id}/file', [ManageMaterialController::class, 'storeFile'])->name('file-materials');
     Route::get('/session-materials/{id}', [ManageMaterialSessionController::class, 'index'])->name('session-materials');
-    Route::post('/session-materials/{id}/store', [ManageMaterialSessionController::class, 'store'])->name('store-sessions');
+    Route::post('/session-materials/{id}/store', [ManageMaterialSessionController::class, 'store'])->name('store-session-materials');
     Route::get('/manage-tasks/{id}', [ManageTaskController::class, 'index'])->name('detail-tasks');
     Route::put('/manage-tasks/{id}/update', [ManageTaskController::class, 'update'])->name('update-tasks');
     Route::get('/manage-tasks/{id}/question', [ManageTaskController::class, 'question'])->name('question-tasks');
@@ -80,6 +80,7 @@ Route::prefix('teacher')->middleware('role:guru')->group(function () {
     Route::post('/manage-tasks/{id}/{type}/store', [ManageTaskSessionController::class, 'store'])->name('store-sessions');
     Route::get('/manage-scores', [ManageScoreController::class, 'index'])->name('manage-scores');
     Route::get('/manage-scores/{idModul}', [ManageScoreController::class, 'detail'])->name('detail-moduls');
+    Route::get('/manage-scores/export/{idModul}', [ManageScoreController::class, 'exportExcel'])->name('export-scores');
     Route::get('/manage-scores/{idModul}/{idSession}', [ManageScoreController::class, 'assessment'])->name('detail-assessments');
     Route::post('/manage-scores/{idModul}/{idSession}/store', [ManageScoreController::class, 'store'])->name('store-assessments');
     Route::get('/manage-progress', [ManageProgressController::class, 'index'])->name('manage-progress');
