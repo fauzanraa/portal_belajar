@@ -1,6 +1,20 @@
 @extends('layout-admins.app')
 
 @section('content')
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showSuccessMessage(@json(session('success')));
+            });
+        </script>
+    @elseif(session('error')) 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showErrorMessage(@json(session('error')));
+            });
+        </script>
+    @endif
+
     <div class="w-full rounded-bl-xl p-5 pl-8 bg-white">   
         <h1>Manajemen Nilai</h1>
         <p class="text-[10px] tracking-[5px] text-slate-200">Halaman untuk guru mengelola nilai siswa</p>
@@ -36,6 +50,14 @@
                     </ul>
                 </div>
             </div>
+        </div>
+
+        <div class="flex justify-end">
+            <a href="{{ route('export-scores', ['idModul' => encrypt($taskSession->meeting_id)]) }}" 
+            class="inline-flex justify-end items-center text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2">
+                <i class="bi bi-file-earmark-excel mr-2"></i>
+                Export Excel
+            </a>
         </div>
 
         <div class="mt-9">
@@ -116,6 +138,54 @@
 
 @section('script')
     <script>
+        function showSuccessMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="bi bi-check-lg mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function showErrorMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="bi bi-x-circle-fill mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const radios = document.querySelectorAll('input[name="filter-radio"]');
             const rows = document.querySelectorAll('#student-table tbody tr[data-access]');
@@ -155,5 +225,15 @@
                 sortable: false
             });
         }
+
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            // const selectedAccess = document.querySelector('input[name="filter-radio"]:checked').value;
+            const currentUrl = window.location.href;
+            const idModul = currentUrl.split('/').pop();
+            
+            let exportUrl = `{{ route('export-scores', ['idModul' => '__ID_MODUL__']) }}`.replace('__ID_MODUL__', idModul);
+            
+            window.location.href = exportUrl;
+        });
     </script>
 @endsection

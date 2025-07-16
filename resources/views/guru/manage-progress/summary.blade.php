@@ -21,7 +21,7 @@
 
             <!-- Statistics Cards -->
             <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ $taskSession->type == 'pretest' ? '3' : '4' }} gap-6 mb-8">
                     <!-- Nilai Card -->
                     <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-l-4 border-green-500">
                         <div class="flex items-center justify-between">
@@ -62,17 +62,19 @@
                     </div>
 
                     <!-- Efisiensi Card -->
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-l-4 border-purple-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-purple-600 text-sm font-medium uppercase">Hasil Evaluasi</p>
-                                <p class="text-2xl font-bold text-purple-700 mt-2">{{$evaluation}}</p>
-                            </div>
-                            <div class="bg-purple-500 rounded-full p-3">
-                                <i class="bi bi-lightning text-white text-xl"></i>
+                    @if ($taskSession->type == 'posttest')
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-l-4 border-purple-500">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-purple-600 text-sm font-medium uppercase">Hasil Evaluasi</p>
+                                    <p class="text-2xl font-bold text-purple-700 mt-2">{{$evaluation}}</p>
+                                </div>
+                                <div class="bg-purple-500 rounded-full p-3">
+                                    <i class="bi bi-lightning text-white text-xl"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
 
                 <!-- Comparison Section -->
@@ -195,5 +197,70 @@
 @endsection
 
 @section('script')
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionNavBtns = document.querySelectorAll('.question-nav-btn');
+            const currentQuestionEl = document.getElementById('current-question');
+            const studentFlowchartEl = document.getElementById('student-flowchart');
+            const teacherFlowchartEl = document.getElementById('teacher-flowchart');
+            
+            // Data soal dan jawaban dari backend
+            const questions = @json($taskQuestions);
+            const answersMap = @json($answersMap);
+            
+            questionNavBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const questionId = parseInt(this.dataset.questionId);
+                    const questionIndex = parseInt(this.dataset.questionIndex);
+                    
+                    // Update active button
+                    questionNavBtns.forEach(b => {
+                        b.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
+                        b.classList.add('bg-white', 'text-gray-600', 'border-gray-300');
+                    });
+                    this.classList.remove('bg-white', 'text-gray-600', 'border-gray-300');
+                    this.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
+                    
+                    // Update question text
+                    const currentQuestion = questions.find(q => q.id === questionId);
+                    if (currentQuestion) {
+                        currentQuestionEl.textContent = currentQuestion.question || 'Buatlah flowchart untuk menyelesaikan permasalahan berikut...';
+                    }
+                    
+                    // Update student flowchart
+                    const studentAnswer = answersMap[questionId];
+                    if (studentAnswer && studentAnswer.flowchart_img) {
+                        studentFlowchartEl.innerHTML = `
+                            <img src="{{ asset('storage/assets/flowcharts/studentAnswers/') }}/${studentAnswer.flowchart_img}" 
+                                alt="Flowchart Siswa" 
+                                class="max-w-full max-h-full object-contain rounded-lg shadow-sm">
+                        `;
+                    } else {
+                        studentFlowchartEl.innerHTML = `
+                            <div class="text-center text-blue-400">
+                                <i class="bi bi-diagram-2 text-3xl mb-2"></i>
+                                <p>Tidak ada jawaban</p>
+                            </div>
+                        `;
+                    }
+                    
+                    // Update teacher flowchart
+                    if (currentQuestion && currentQuestion.flowchart_img) {
+                        teacherFlowchartEl.innerHTML = `
+                            <img src="{{ asset('storage/assets/flowcharts/keyAnswers/') }}/${currentQuestion.flowchart_img}" 
+                                alt="Kunci Jawaban" 
+                                class="max-w-full max-h-full object-contain rounded-lg shadow-sm">
+                        `;
+                    } else {
+                        teacherFlowchartEl.innerHTML = `
+                            <div class="text-center text-green-400">
+                                <i class="bi bi-diagram-3 text-3xl mb-2"></i>
+                                <p>Kunci jawaban belum tersedia</p>
+                            </div>
+                        `;
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

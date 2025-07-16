@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Classroom;
 use App\Models\Student;
 use App\Models\TaskSession;
+use App\Models\TaskQuestion;
 use App\Models\StudentTaskSession;
 use App\Models\Meeting;
+use App\Exports\ScoreExport;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +36,8 @@ class ManageScoreController extends Controller
         $dataSiswa = StudentTaskSession::join('students', 'student_id', '=', 'students.id')
         ->join('classrooms', 'students.class_id', '=', 'classrooms.id')
         ->join('task_sessions', 'task_sessions.id', '=', 'student_task_sessions.task_session_id')
-        ->where('task_session_id', $taskSession->id)
+        ->join('meetings', 'meetings.id', '=', 'task_sessions.meeting_id')
+        ->where('meetings.id', $decryptedModul)
         ->select(
             'student_task_sessions.*', 
             'students.name',
@@ -43,6 +47,34 @@ class ManageScoreController extends Controller
         ->get();
 
         return view('guru.manage-scores.detail', compact('dataSiswa', 'taskSession'));
+    }
+
+    public function exportExcel($idModul){
+        $decryptedModul = decrypt($idModul);
+
+        $taskSession = TaskSession::where('meeting_id', $decryptedModul)->first();
+
+        $dataSiswa = StudentTaskSession::join('students', 'student_id', '=', 'students.id')
+            ->join('classrooms', 'students.class_id', '=', 'classrooms.id')
+            ->join('task_sessions', 'task_sessions.id', '=', 'student_task_sessions.task_session_id')
+            ->join('meetings', 'meetings.id', '=', 'task_sessions.meeting_id')
+            ->where('meetings.id', $decryptedModul)
+            ->select(
+                'students.name as Nama Siswa',
+                'classrooms.class_name as Kelas',
+                'task_sessions.type as Tipe Tugas',
+                'meetings.title as Modul', 
+                'student_task_sessions.score as Nilai'
+            )
+            ->get()
+            ->toArray();
+
+        $filename = storage_path('app/public/excel' . $taskSession->id . '.xlsx');
+
+        SimpleExcelWriter::create($filename)
+            ->addRows($dataSiswa);
+
+        return response()->download($filename)->deleteFileAfterSend();
     }
 
     public function assessment($idModul, $idSession){
@@ -69,8 +101,6 @@ class ManageScoreController extends Controller
     public function store($idModul, Request $request){
         $request->validate([
             'student_session' => 'required',
-            'score' => 'required|numeric',
-            'time' => 'required|numeric',
             'correct_elements' => 'required|numeric',
         ]);
 
@@ -78,14 +108,37 @@ class ManageScoreController extends Controller
             DB::beginTransaction();
 
             $sessionSiswa = StudentTaskSession::find($request->student_session);
-            $sessionSiswa->score = $request->score;
+            $question = TaskQuestion::where('task_session_id', $sessionSiswa->task_session_id)->get();
+            $totalElements = 0;
+
+            foreach ($question as $data) {
+                $flowchart = json_decode($data->correct_answer);
+
+                $totalLinks = count($flowchart->linkDataArray);
+                $totalNodes = count($flowchart->nodeDataArray);
+                $totalElements += $totalLinks + $totalNodes;
+            }
+
+            if ($request->correct_elements > $totalElements) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Elemen benar tidak boleh lebih dari ' . $totalElements
+                ], 422);
+            }
+
+            $sessionSiswa->score = $totalElements > 0 ? round(($request->correct_elements / $totalElements) * 100, 2) : 0;
             $sessionSiswa->duration = ($request->time * 60);
+            $sessionSiswa->total_elements = $totalElements;
             $sessionSiswa->correct_elements = $request->correct_elements;
             $sessionSiswa->save();
             
             DB::commit();
 
-            return redirect()->route('detail-moduls', $idModul)->with('success', 'Data berhasil disimpan!');
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data berhasil disimpan!',
+                'redirect' => route('detail-moduls', $idModul),
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menambahkan data!');

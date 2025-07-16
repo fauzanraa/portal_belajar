@@ -1,5 +1,9 @@
 @extends('layout-admins.app')
 
+@section('csrf-token')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
 @section('content')
     @if(session('success'))
         <script>
@@ -43,7 +47,7 @@
             $encryptedSession = Illuminate\Support\Facades\Crypt::encrypt($sessionSiswa->id);
         @endphp
 
-        <form action="{{route('store-assessments', ['idModul' => $idModul, 'idSession' => $encryptedSession])}}" class="space-y-6" method="POST">
+        <form id="assessment" action="{{route('store-assessments', ['idModul' => $idModul, 'idSession' => $encryptedSession])}}" class="space-y-6" method="POST">
             @csrf
             <div class="bg-white p-6 rounded-lg shadow-md border border-sky-100">
                 <h3 class="text-lg font-semibold text-sky-600 mb-4 border-b pb-2">📝 Data Nilai</h3>
@@ -53,7 +57,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label for="score" class="block text-sm font-medium text-gray-700 mb-2">Skor (0-100)</label>
-                        <input type="text" inputmode="numeric" id="score" name="score" min="0" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200 hover:shadow-sm" placeholder="Masukkan skor">
+                        <input type="text" value="{{$sessionSiswa->score}}" inputmode="numeric" id="score" name="score" min="0" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200 hover:shadow-sm" placeholder="Masukkan skor" readonly>
                     </div>
 
                     <div>
@@ -100,6 +104,49 @@
 
 @section('script')
     <script>
+        document.getElementById('assessment').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const url = form.action;
+            const formData = new FormData(form);
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: formData
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) throw data;
+                return data;
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    showSuccessMessage(data.message);
+
+                    setTimeout(() => {
+                        window.location.href = '{{ route('detail-moduls', $idModul) }}';
+                    }, 2000);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                if (err.message) {
+                    showErrorMessage(err.message);
+                } else if (err.errors) {
+                    const messages = Object.values(err.errors).flat().join('\n');
+                    showErrorMessage(messages);
+                } else {
+                    showErrorMessage('Terjadi kesalahan, coba lagi!');
+                }
+            });
+        });
+
+
         function showSuccessMessage(message) {
             const notification = document.createElement('div');
             notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';

@@ -84,10 +84,12 @@
                                     $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($dataTugas->id);
                                 @endphp
                                 <div class="button flex gap-4 justify-self-end">
-                                    <button data-modal-target="component-settings-modal" data-modal-toggle="component-settings-modal" 
-                                        class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 hover:bg-sky-700 text-white cursor-pointer">
-                                        <i class="bi bi-gear mr-1"></i> Atur Komponen
-                                    </button>
+                                    @if ($dataSoal->count() > 0)
+                                        <button data-modal-target="component-settings-modal" data-modal-toggle="component-settings-modal" 
+                                            class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 hover:bg-sky-700 text-white cursor-pointer">
+                                            <i class="bi bi-gear mr-1"></i> Atur Komponen
+                                        </button>
+                                    @endif
                                     <button class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer" onclick="window.location.href='{{route('question-tasks', $encryptedTask)}}'">
                                         <i class="bi bi-plus-lg mr-1"></i> Tambah Soal
                                     </button>
@@ -149,39 +151,39 @@
                                 </div>
                             </th>
                         </tr>
-                        @if ($dataTugas->type == 'posttest') 
-                            <tr class="bg-white">
-                                <th scope="row" class="px-6 py-4 font-medium border border-gray-400 bg-slate-300 text-black">
-                                    Akses Tugas Via Non Sistem
-                                </th>
-                                <td class="px-6 py-4 border-y border-gray-200 border-r border-gray-200">
-                                    <div class="block">
-                                        @if($sesiSiswaNonSistem->isEmpty())
-                                            <p class="text-gray-500 italic">Belum ada sesi</p>
-                                        @else
-                                            @foreach($sesiSiswaNonSistem as $className => $students)
-                                                <div class="mb-2">
-                                                    <button class="hover:text-sky-500 cursor-pointer">
-                                                        Kelas {{ $className }} - {{ $students->count() }} Siswa
-                                                    </button>
-                                                </div>
-                                            @endforeach
-                                        @endif
-                                    </div>
-
-                                    <div class="block mt-5 mb-2 flex gap-4">
-                                        @php
-                                            $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($dataTugas->id);
-                                        @endphp
-                                        <a href="{{route('session-tasks', ['id' => $encryptedTask, 'type' => 'non_system'])}}" class="text-sky-500 hover:text-sky-700">
-                                            <div class="block">
-                                                <i class="bi bi-people-fill"></i><span class="ml-3">Atur sesi</span>
+                        {{-- @if ($dataTugas->type == 'posttest')  --}}
+                        <tr class="bg-white">
+                            <th scope="row" class="px-6 py-4 font-medium border border-gray-400 bg-slate-300 text-black">
+                                Akses Tugas Via Non Sistem
+                            </th>
+                            <td class="px-6 py-4 border-y border-gray-200 border-r border-gray-200">
+                                <div class="block">
+                                    @if($sesiSiswaNonSistem->isEmpty())
+                                        <p class="text-gray-500 italic">Belum ada sesi</p>
+                                    @else
+                                        @foreach($sesiSiswaNonSistem as $className => $students)
+                                            <div class="mb-2">
+                                                <button class="hover:text-sky-500 cursor-pointer">
+                                                    Kelas {{ $className }} - {{ $students->count() }} Siswa
+                                                </button>
                                             </div>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endif
+                                        @endforeach
+                                    @endif
+                                </div>
+
+                                <div class="block mt-5 mb-2 flex gap-4">
+                                    @php
+                                        $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($dataTugas->id);
+                                    @endphp
+                                    <a href="{{route('session-tasks', ['id' => $encryptedTask, 'type' => 'non_system'])}}" class="text-sky-500 hover:text-sky-700">
+                                        <div class="block">
+                                            <i class="bi bi-people-fill"></i><span class="ml-3">Atur sesi</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {{-- @endif --}}
                         <tr class="bg-white">
                             <th scope="row" class="px-6 py-4 font-medium border border-gray-400 bg-slate-300 text-black">
                                 Akses Tugas Via Sistem
@@ -376,7 +378,6 @@
         </div>
     </div>
 
-
     <div id="flowchart-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-4xl max-h-full">
             <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
@@ -393,9 +394,18 @@
                 </div>
                 <div class="p-4 md:p-5">
                     <div id="flowchart-container" class="w-full h-96 border border-gray-300 rounded-lg overflow-auto bg-gray-50 flex items-center justify-center">
-                        <img src="{{ asset('storage/assets/flowcharts/correctAnswer/' . $data->flowchart_img) }}"  
-                            alt="Flowchart Siswa" 
-                            class="max-w-full max-h-full object-contain rounded-lg shadow-sm">
+                        @php
+                            $flowchartImg = $data->flowchart_img ?? null;
+                        @endphp
+                        
+                        @if($flowchartImg)
+                            <img src="{{ asset('storage/assets/flowcharts/correctAnswer/' . $flowchartImg) }}" alt="Flowchart Siswa" class="max-w-full max-h-full object-contain rounded-lg shadow-sm">
+                        @else
+                            <div class="text-center text-gray-500">
+                                <i class="bi bi-image text-4xl mb-2"></i>
+                                <p>Tidak ada gambar flowchart</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

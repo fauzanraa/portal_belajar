@@ -35,7 +35,7 @@
                         </th>
                         <th>
                             <span class="flex items-center">
-                                NIM
+                                NISN
                             </span>
                         </th>
                         <th>
@@ -120,7 +120,7 @@
                     <form class="space-y-4" action="{{route('store-students')}}" method="POST">
                         @csrf
                         <div>
-                            <label for="student_nisn" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NIM</label>
+                            <label for="student_nisn" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NISN</label>
                             <input type="text" inputmode="numeric" name="student_nisn" id="student_nisn" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
                         </div>
                         <div>
@@ -204,7 +204,7 @@
                         @method('PUT')
                         <input type="text" name="student_id" id="student_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" hidden />
                         <div>
-                            <label for="student_nisn_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NIM</label>
+                            <label for="student_nisn_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NISN</label>
                             <input type="text" inputmode="numeric" name="student_nisn_edit" id="student_nisn_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
                         </div>
                         <div>

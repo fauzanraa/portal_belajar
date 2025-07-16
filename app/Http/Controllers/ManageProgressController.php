@@ -17,6 +17,7 @@ class ManageProgressController extends Controller
         $dataSiswa = StudentTaskSession::join('students', 'student_id', '=', 'students.id')
         ->join('classrooms', 'students.class_id', '=', 'classrooms.id')
         ->select('students.id as student_id', 'students.name', 'classrooms.class_name as class_name', 'student_task_sessions.*')
+        ->where('student_task_sessions.access', 'system')
         ->get();
 
         $studentSession = $dataSiswa->groupBy('student_id')->map(function ($group) {
@@ -88,7 +89,11 @@ class ManageProgressController extends Controller
         ->where('student_id', $studentSession->student_id)
         ->get();
 
-        $ratioError = (($studentSession->total_elements - $studentSession->correct_elements) / $studentSession->total_elements) * 100;
+        if($studentSession->total_elements != 0 && $studentSession->correct_elements != 0) {
+            $ratioError = round((($studentSession->total_elements - $studentSession->correct_elements) / $studentSession->total_elements) * 100, 2);
+        } else {
+            $ratioError = 100;
+        }
 
         $taskPreTest = TaskSession::with('studentTaskSession')
         ->where('meeting_id', $taskSession->meeting_id)

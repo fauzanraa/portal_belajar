@@ -175,10 +175,32 @@
                             <div>
                                 <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipe Soal</label>
                                 <select id="type_${i}" name="type[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                    <option value="" selected disabled>Pilihan Kelas</option>
-                                    <option value="main">Biasa</option>
+                                    <option value="" selected disabled>Pilihan Tipe</option>
+                                    <option value="intro">Pengenalan</option>
+                                    <option value="study_case">Studi Kasus</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div id="flowchart_components_${i}" class="mt-6">
+                            <label class="block mb-2 text-sm font-medium text-gray-900">
+                                Komponen wajib:
+                            </label>
+                            <select id="components_${i}" name="flowchart_components[${i}][]" 
+                                    class="flowchart-components-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                                    multiple="multiple">
+                                <option value="Terminator">Terminator</option>
+                                <option value="Process">Process</option>
+                                <option value="Decision">Decision</option>
+                                <option value="OnPageReference">On Page Reference</option>
+                                <option value="OffPageReference">Off Page Reference</option>
+                                <option value="Comment">Comment</option>
+                                <option value="InputOutput">Input/Output</option>
+                                <option value="ManualOperation">Manual Operation</option>
+                                <option value="PredefinedProcess">Predefined Process</option>
+                                <option value="Display">Display</option>
+                                <option value="Preparation">Preparation</option>
+                            </select>
                         </div>
                     </div>
                 `;
@@ -195,10 +217,57 @@
                     width: '100%',
                     theme: 'classic',
                 });
+
+                $(`#components_${i}`).select2({
+                    placeholder: "Pilih komponen flowchart",
+                    allowClear: true,
+                    width: '100%',
+                    theme: 'classic'
+                });
+
+                // $(`#type_${i}`).on('change', function() {
+                //     const selectedType = $(this).val();
+                //     const flowchartContainer = $(`#flowchart_components_${i}`);
+                    
+                //     if (selectedType === 'flowchart') {
+                //         flowchartContainer.show();
+                //         $(`#components_${i}`).attr('required', true);
+                //     } else {
+                //         flowchartContainer.hide();
+                //         $(`#components_${i}`).removeAttr('required');
+                //         $(`#components_${i}`).val(null).trigger('change');
+                //     }
+                // });
             }
             
+            // form.style.display = 'block';
             form.scrollIntoView({behavior: 'smooth'});
         });
+
+        function getFormData() {
+            const totalQuestions = parseInt(document.getElementById('total_question_hidden').value);
+            const formData = new FormData();
+            
+            formData.append('total_question', totalQuestions);
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                const question = $(`textarea[name="question[]"]:eq(${i-1})`).val();
+                const type = $(`#type_${i}`).val(); // Selalu "main"
+                const subjects = $(`#subject_${i}`).val() || [];
+                const components = $(`#components_${i}`).val() || [];
+                
+                formData.append(`question[${i}]`, question);
+                formData.append(`type[${i}]`, type);
+                formData.append(`subjects[${i}]`, JSON.stringify(subjects));
+                
+                // Simpan komponen flowchart jika ada yang dipilih
+                if (components.length > 0) {
+                    formData.append(`flowchart_components[${i}]`, JSON.stringify(components));
+                }
+            }
+            
+            return formData;
+        }
 
     </script>
 @endsection

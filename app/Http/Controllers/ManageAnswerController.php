@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ComponentSetting;
 use App\Models\TaskQuestion;
+use App\Models\QuestionExpectedAnswer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
@@ -19,7 +20,9 @@ class ManageAnswerController extends Controller
             ->where('is_enabled', true)
             ->pluck('component_name');
 
-        return view('guru.manage-meetings.draw', compact('data_soal', 'encryptedTask', 'encryptedQuestion', 'pengaturanKomponen'));
+        $requiredComponents = $data_soal->required_components ?? [];
+
+        return view('guru.manage-meetings.draw', compact('data_soal', 'encryptedTask', 'encryptedQuestion', 'pengaturanKomponen', 'requiredComponents'));
     }
 
     public function store(Request $request){
@@ -39,15 +42,6 @@ class ManageAnswerController extends Controller
                 ], 400);
             }
 
-            $validasiFlow = $this->validateDiagramJson($decoded);
-
-            if ($validasiFlow !== true) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validasiFlow,
-                ], 422);
-            }
-
             $question = TaskQuestion::find($request->soal_id);
             
             if (!$question) {
@@ -55,6 +49,17 @@ class ManageAnswerController extends Controller
                     'success' => false,
                     'message' => 'Soal tidak ditemukan'
                 ], 404);
+            }
+
+            $decoded = $this->normalizeFlowchartKeys($decoded);
+
+            $validasiFlow = $this->validateDiagramJson($decoded, $question->id);
+
+            if ($validasiFlow !== true) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validasiFlow,
+                ], 422);
             }
 
             $imageFileName = null;
@@ -95,7 +100,7 @@ class ManageAnswerController extends Controller
                 }
             }
 
-            $question->correct_answer = $request->flowchart_data; 
+            $question->correct_answer = $decoded; 
             if ($imageFileName) {
                 $question->flowchart_img = $imageFileName; 
             }
@@ -123,71 +128,203 @@ class ManageAnswerController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan flowchart'
+                'message' => 'Terjadi kesalahan saat menyimpan flowchart' .$e->getMessage()
             ], 500);
         }
     }
 
-    private function validateDiagramJson(array $json): bool|string{
+    private function normalizeFlowchartKeys(array $json): array {
         $nodes = $json['nodeDataArray'] ?? [];
         $links = $json['linkDataArray'] ?? [];
 
-        $terminators = array_filter($nodes, fn($n) => ($n['category'] ?? null) === 'Terminator');
+        $oldToNewKey = [];
+        $newKey = 1;
 
-        $startNodes = array_filter($terminators, fn($n) => strtolower(trim($n['text'] ?? '')) === 'start');
-        $endNodes = array_filter($terminators, fn($n) => strtolower(trim($n['text'] ?? '')) === 'end');
-
-        if (count($startNodes) !== 1 || count($endNodes) !== 1) {
-            return 'Diagram harus memiliki tepat satu Start dan satu End (kategori Terminator).';
+        foreach ($nodes as &$node) {
+            $oldKey = $node['key'];
+            $oldToNewKey[$oldKey] = $newKey;
+            $node['key'] = $newKey;
+            $newKey++;
         }
 
-        $startKey = array_values($startNodes)[0]['key'];
-        $endKey = array_values($endNodes)[0]['key'];
-
-        $incoming = [];
-        $outgoing = [];
-
-        foreach ($links as $link) {
-            $from = $link['from'];
-            $to = $link['to'];
-
-            $outgoing[$from][] = $to;
-            $incoming[$to][] = $from;
-        }
-
-        if (!empty($incoming[$startKey])) {
-            return 'Node Terminator dengan teks "Start" tidak boleh memiliki koneksi masuk.';
-        }
-
-        if (!empty($outgoing[$endKey])) {
-            return 'Node Terminator dengan teks "End" tidak boleh memiliki koneksi keluar.';
-        }
-        return true;
-    }
-
-
-    public function editAnswer($id)
-    {
-        $decryptedId = Crypt::decrypt($id);
-        $data_soal = TaskQuestion::findOrFail($decryptedId);
-        $encryptedTask = Crypt::encrypt($data_soal->task_session_id);
-        $encryptedQuestion = Crypt::encrypt($data_soal->id);
-        
-        $hasCorrectAnswer = !empty($data_soal->correct_answer);
-        $correctAnswerData = null;
-        
-        if ($hasCorrectAnswer) {
-            $correctAnswerData = $data_soal->correct_answer;
-            
-            if (is_string($correctAnswerData)) {
-                $decoded = json_decode($correctAnswerData, true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    $hasCorrectAnswer = false;
-                    $correctAnswerData = null;
-                }
+        foreach ($links as &$link) {
+            if (isset($oldToNewKey[$link['from']])) {
+                $link['from'] = $oldToNewKey[$link['from']];
+            }
+            if (isset($oldToNewKey[$link['to']])) {
+                $link['to'] = $oldToNewKey[$link['to']];
             }
         }
+
+        return [
+            'nodeDataArray' => $nodes,
+            'linkDataArray' => $links
+        ];
+    }
+
+    // private function nodeIdentity(array $node): string {
+    //     return strtolower(trim($node['text'] ?? '')) . '|' . strtolower(trim($node['category'] ?? ''));
+    // }
+
+    // private function buildKeyIdentityMap(array $nodes): array {
+    //     $map = [];
+    //     foreach ($nodes as $node) {
+    //         $map[$node['key']] = $this->nodeIdentity($node);
+    //     }
+    //     return $map;
+    // }
+
+    // private function normalizeLinksWithIdentity(array $links, array $keyToIdentityMap): array {
+    //     $normalized = [];
+    //     foreach ($links as $link) {
+    //         $from = $keyToIdentityMap[$link['from']] ?? null;
+    //         $to = $keyToIdentityMap[$link['to']] ?? null;
+
+    //         if ($from && $to) {
+    //             $normalized[] = [
+    //                 'from' => $from,
+    //                 'to' => $to,
+    //                 'text' => isset($link['text']) ? strtolower(trim($link['text'])) : null
+    //             ];
+    //         }
+    //     }
+    //     return $normalized;
+    // }
+
+
+    private function validateDiagramJson(array $json, int $questionId): bool|string {
+        $nodes = $json['nodeDataArray'] ?? [];
+        $links = $json['linkDataArray'] ?? [];
+
+        $question = TaskQuestion::find($questionId);
+        $requiredComponents = [];
         
-        return view('guru.manage-meetings.draw', compact('data_soal', 'hasCorrectAnswer', 'correctAnswerData', 'encryptedTask', 'encryptedQuestion'));
+        if ($question && $question->required_components) {
+            $requiredComponents = $question->required_components;
+            
+            if (is_string($requiredComponents)) {
+                $requiredComponents = json_decode($requiredComponents, true) ?: [];
+            }
+        }
+
+        if ($question && $question->type != 'intro') {
+            $terminators = array_filter($nodes, fn($n) => ($n['category'] ?? null) === 'Terminator');
+
+            $startNodes = array_filter($terminators, fn($n) => strtolower(trim($n['text'] ?? '')) === 'start');
+            $endNodes = array_filter($terminators, fn($n) => strtolower(trim($n['text'] ?? '')) === 'end');
+
+            if (count($startNodes) !== 1 || count($endNodes) !== 1) {
+                return 'Diagram harus memiliki tepat satu Start dan satu End (kategori Terminator).';
+            }
+
+            $startKey = array_values($startNodes)[0]['key'];
+            $endKey = array_values($endNodes)[0]['key'];
+
+            $incoming = [];
+            $outgoing = [];
+
+            foreach ($links as $link) {
+                $from = $link['from'];
+                $to = $link['to'];
+
+                $outgoing[$from][] = $to;
+                $incoming[$to][] = $from;
+            }
+
+            if (!empty($incoming[$startKey])) {
+                return 'Node Terminator dengan teks "Start" tidak boleh memiliki koneksi masuk.';
+            }
+
+            if (!empty($outgoing[$endKey])) {
+                return 'Node Terminator dengan teks "End" tidak boleh memiliki koneksi keluar.';
+            }
+        }
+
+        if (!empty($requiredComponents)) {
+            $usedComponents = array_unique(array_column($nodes, 'category'));
+            
+            $missingComponents = [];
+            foreach ($requiredComponents as $required) {
+                if (!in_array($required, $usedComponents)) {
+                    $missingComponents[] = $required;
+                }
+            }
+            
+            if (!empty($missingComponents)) {
+                return "Komponen berikut wajib digunakan dalam diagram flowchart: " . implode(', ', $missingComponents) . 
+                       ". Komponen yang saat ini digunakan: " . implode(', ', $usedComponents);
+            }
+        }
+
+        $expectedAnswer = QuestionExpectedAnswer::where('task_question_id', $question->id)
+        ->where('task_session_id', $question->task_session_id)
+        ->first();
+
+        if (!$expectedAnswer) {
+            return 'Expected result belum ditentukan untuk soal ini.';
+        }
+
+        $expectedJson = json_decode($expectedAnswer->answer, true);
+
+        if (!$expectedJson || !isset($expectedJson['nodeDataArray'], $expectedJson['linkDataArray'])) {
+            return 'Format expected result tidak valid.';
+        }
+
+        $normalizeNodes = fn($arr) => array_map(fn($n) => [
+            'text' => strtolower(trim($n['text'] ?? '')),
+            'category' => strtolower(trim($n['category'] ?? '')),
+        ], $arr);
+
+        $actualNodes = $normalizeNodes($nodes);
+        $expectedNodes = $normalizeNodes($expectedJson['nodeDataArray']);
+
+        function buildNodeMap(array $nodes): array {
+            $map = [];
+            foreach ($nodes as $n) {
+                $key = $n['key'];
+                $text = strtolower(trim($n['text'] ?? ''));
+                $category = strtolower(trim($n['category'] ?? ''));
+                $map[$key] = "{$text} ({$category})";
+            }
+            return $map;
+        }
+
+        $actualNodeMap = buildNodeMap($json['nodeDataArray']);
+        $expectedNodeMap = buildNodeMap($expectedJson['nodeDataArray']);
+
+        function normalizeLinks(array $links, array $nodeMap): array {
+            return array_map(function ($link) use ($nodeMap) {
+                return [
+                    'from' => $nodeMap[$link['from']] ?? 'UNKNOWN',
+                    'to' => $nodeMap[$link['to']] ?? 'UNKNOWN',
+                    'text' => $link['text'] ?? null,
+                ];
+            }, $links);
+        }
+
+        $actualLinks = normalizeLinks($json['linkDataArray'], $actualNodeMap);
+        $expectedLinks = normalizeLinks($expectedJson['linkDataArray'], $expectedNodeMap);
+
+        if (count($actualNodes) !== count($expectedNodes)) {
+            return "Jumlah node tidak sesuai. Diharapkan: " . count($expectedNodes) . ", Diberikan: " . count($actualNodes);
+        }
+
+        foreach ($expectedNodes as $en) {
+            if (!in_array($en, $actualNodes)) {
+                return "Node dengan text '{$en['text']}' dan category '{$en['category']}' tidak ditemukan.";
+            }
+        }
+
+        if (count($actualLinks) !== count($expectedLinks)) {
+            return "Jumlah link tidak sesuai. Diharapkan: " . count($expectedLinks) . ", Diberikan: " . count($actualLinks);
+        }
+
+        foreach ($expectedLinks as $el) {
+            if (!in_array($el, $actualLinks)) {
+                return "Link dari '{$el['from']}' ke '{$el['to']}'" . 
+                    ($el['text'] ? " dengan teks '{$el['text']}'" : '') . " tidak ditemukan.";
+            }
+        }
+        return true;
     }
 }

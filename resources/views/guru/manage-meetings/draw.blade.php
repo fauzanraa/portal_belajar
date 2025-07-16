@@ -10,7 +10,6 @@
 
 @section('content')
     <div class="container mx-auto px-4 py-8 min-h-screen">
-        <!-- Header Section -->
         <div class="w-full mb-6">
             <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                 <div class="flex items-center mb-4">
@@ -24,7 +23,6 @@
         </div>
 
         <div class="flex flex-col lg:flex-row gap-6">
-            <!-- Komponen Palette -->
             <div class="lg:w-1/4 w-full">
                 <div class="bg-white rounded-xl shadow-lg p-4 h-[600px] border border-gray-200">
                     <div class="flex items-center mb-4">
@@ -35,7 +33,6 @@
                 </div>
             </div>
             
-            <!-- Area Gambar -->
             <div class="lg:w-3/4 w-full flex flex-col gap-4">
                 <div class="bg-white rounded-xl shadow-lg p-4 h-full border border-gray-200">
                     <div class="flex items-center justify-between mb-4">
@@ -45,14 +42,12 @@
                         </div>
                     </div>
                     <div id="myDiagramDiv" class="border-2 border-dashed border-gray-300 rounded-lg h-[520px] bg-gradient-to-br from-gray-50 to-white hover:border-green-300 transition-colors duration-300 relative overflow-hidden">
-                        <!-- Grid Pattern Background -->
                         <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
                     </div>
                 </div>  
             </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="mt-6 bg-white rounded-xl shadow-lg p-6 border border-gray-200">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button onclick="window.location.href='{{ route('detail-tasks', ['id' => $encryptedTask]) }}'" class="group relative overflow-hidden bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
@@ -73,7 +68,6 @@
             </div>
         </div>
 
-        <!-- JSON Storage (Hidden) -->
         <div class="hidden mt-8">
             <h3 class="text-lg font-semibold text-gray-700 mb-2">Model JSON:</h3>
             <textarea id="mySavedModel" class="w-full h-64 p-2 border border-gray-300 rounded-md bg-gray-50">
@@ -84,7 +78,6 @@
             </textarea>
         </div>
 
-        <!-- Floating Help Button -->
         <div class="fixed bottom-6 right-6 z-50">
             <button class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110" onclick="showHelp()">
                 <i class="bi bi-person-raised-hand text-xl"></i>
@@ -110,39 +103,6 @@
             box-shadow: 0 0 20px rgba(129, 140, 248, 0.1);
         }
     </style>
-
-    <script>
-        function updateProgress() {
-            const progressBar = document.getElementById('progressBar');
-            const nodes = myDiagram.model.nodeDataArray.length;
-            const progress = Math.min((nodes / 10) * 100, 100); // Assume 10 nodes = 100%
-            progressBar.style.width = progress + '%';
-        }
-
-        function showHelp() {
-            Swal.fire({
-                title: 'Panduan',
-                icon: 'info',
-                html: `
-                    <ul class="text-sm text-justify leading-relaxed">
-                        <li>- Drag komponen dari panel kiri ke area gambar</li>
-                        <li>- Hubungkan komponen dengan menarik garis</li>
-                        <li>- Klik dua kali pada komponen untuk mengedit teks</li>
-                        <li>- Tombol selesai digunakan untuk menyimpan jawaban</li>
-                    </ul>
-                `,
-                confirmButtonText: 'Ok'
-            });
-        }
-
-        setInterval(() => {
-            if (typeof myDiagram !== 'undefined' && myDiagram.model.nodeDataArray.length > 0) {
-                updateProgress();
-                // Auto-save logic here
-                console.log('Auto-saving...');
-            }
-        }, 30000); 
-    </script>
 @endsection
 
 
@@ -154,6 +114,107 @@
     <script type="text/javascript" src="{{ asset('js/mxgraph/javascript/mxClient.js') }}"></script>
 
     <script id="code">
+      function showHelp() {
+          Swal.fire({
+              title: 'Panduan',
+              icon: 'info',
+              html: `
+                  <ul class="text-sm text-justify leading-relaxed">
+                      <li>- Drag komponen dari panel kiri ke area gambar</li>
+                      <li>- Hubungkan komponen dengan menarik garis</li>
+                      <li>- Klik dua kali pada komponen untuk mengedit teks</li>
+                      <li>- Tombol selesai digunakan untuk menyimpan jawaban</li>
+                  </ul>
+              `,
+              confirmButtonText: 'Ok'
+          });
+      }
+
+      setInterval(() => {
+          if (typeof myDiagram !== 'undefined' && myDiagram.model.nodeDataArray.length > 0) {
+              updateProgress();
+              // Auto-save logic here
+              console.log('Auto-saving...');
+          }
+      }, 30000); 
+
+      const STORAGE_KEY = `flowchart_${{{ $data_soal->id }}}_${{{ Auth::user()->userable_type }}}_${{{ Auth::user()->userable->id }}}`;
+      let autoSaveInterval;
+
+      function saveToLocalStorage() {
+        try {
+            const modelData = myDiagram.model.toJson();
+            const timestamp = new Date().toISOString();
+            
+            const saveData = {
+                flowchart_data: modelData,
+                timestamp: timestamp,
+                soal_id: {{ $data_soal->id }},
+                user_id: {{ Auth::user()->userable->id ?? 'null' }}
+            };
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+            console.log('Flowchart tersimpan ke localStorage pada:', timestamp);
+
+        } catch (error) {
+            console.error('Error menyimpan ke localStorage:', error);
+        }
+      }
+
+      function loadFromLocalStorage() {
+          try {
+              const savedData = localStorage.getItem(STORAGE_KEY);
+              
+              if (savedData) {
+                  const parsedData = JSON.parse(savedData);
+                  
+                  // Verifikasi data
+                  if (parsedData.soal_id === {{ $data_soal->id }}) {
+                      document.getElementById("mySavedModel").value = parsedData.flowchart_data;
+                      
+                      // Tampilkan notifikasi recovery
+                      showRecoveryNotification(parsedData.timestamp);
+                      
+                      return true;
+                  }
+              }
+          } catch (error) {
+              console.error('Error memuat dari localStorage:', error);
+          }
+          
+          return false;
+      }
+
+      function setupAutoSave() {
+          autoSaveInterval = setInterval(() => {
+              if (typeof myDiagram !== 'undefined' && myDiagram.model.nodeDataArray.length > 0) {
+                  saveToLocalStorage();
+              }
+          }, 10000);
+          
+          myDiagram.addDiagramListener("Modified", function(e) {
+              clearTimeout(window.saveTimeout);
+              window.saveTimeout = setTimeout(() => {
+                  saveToLocalStorage();
+              }, 2000);
+          });
+          
+          window.addEventListener('beforeunload', function(e) {
+              if (typeof myDiagram !== 'undefined' && myDiagram.model.nodeDataArray.length > 0) {
+                  saveToLocalStorage();
+              }
+          });
+      }
+
+      function clearLocalStorage() {
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+            console.log('Local storage cleared');
+        } catch (error) {
+            console.error('Error menghapus localStorage:', error);
+        }
+      }
+
       let allowedComponents = @json($pengaturanKomponen ?? []);
 
       function init() {
@@ -219,28 +280,33 @@
             }
             // define the Node templates for regular nodes
             var lightText = 'whitesmoke';
+            // Cari bagian ini dalam kode Anda dan ganti dengan yang di bawah:
             myDiagram.nodeTemplateMap.add("",  // the default category
-              $(go.Node, "Spot", nodeStyle(),
+            $(go.Node, "Spot", nodeStyle(),
                 // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
                 $(go.Panel, "Auto",
-                  $(go.Shape, "Rectangle",
+                $(go.Shape, "Rectangle",
                     { fill: "#00A9C9", stroke: null },
                     new go.Binding("figure", "figure")),
-                  $(go.TextBlock,
+                $(go.TextBlock,
                     {
-                      font: "bold 11pt Helvetica, Arial, sans-serif",
-                      stroke: lightText,
-                      margin: 8,
-                      maxSize: new go.Size(160, NaN),
-                      wrap: go.TextBlock.WrapFit,
-                      editable: true
+                    font: "bold 11pt Helvetica, Arial, sans-serif",
+                    stroke: lightText,
+                    margin: 8,
+                    maxSize: new go.Size(160, NaN),
+                    wrap: go.TextBlock.WrapFit,
+                    editable: true
                     },
                     new go.Binding("text").makeTwoWay())
                 ),
-                // four named ports, one on each side:
+                // Tambahkan lebih banyak port untuk Decision (Diamond)
                 makePort("T", go.Spot.Top, false, true),
+                makePort("TL", go.Spot.TopLeft, true, true),      
+                makePort("TR", go.Spot.TopRight, true, true),     
                 makePort("L", go.Spot.Left, true, true),
                 makePort("R", go.Spot.Right, true, true),
+                makePort("BL", go.Spot.BottomLeft, true, true),   
+                makePort("BR", go.Spot.BottomRight, true, true),  
                 makePort("B", go.Spot.Bottom, true, false)
             ));
             myDiagram.nodeTemplateMap.add("Terminator",
@@ -512,39 +578,49 @@
 
             // replace the default Link template in the linkTemplateMap
             myDiagram.linkTemplate =
-              $(go.Link,  // the whole link panel
-                {
-                  routing: go.Link.AvoidsNodes,
-                  curve: go.Link.JumpOver,
-                  corner: 5, toShortLength: 4,
-                  relinkableFrom: true,
-                  relinkableTo: true,
-                  reshapable: true,
-                  resegmentable: true,
-                  // mouse-overs subtly highlight links:
-                  mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-                  mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; }
-                },
-                new go.Binding("points").makeTwoWay(),
-                $(go.Shape,  // the highlight shape, normally transparent
-                  { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
-                $(go.Shape,  // the link path shape
-                  { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
-                $(go.Shape,  // the arrowhead
-                  { toArrow: "standard", stroke: null, fill: "gray"}),
-                $(go.Panel, "Auto",  // the link label, normally not visible
-                  { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5},
-                  new go.Binding("visible", "visible").makeTwoWay(),
-                  $(go.Shape, "RoundedRectangle",  // the label shape
-                    { fill: "#F8F8F8", stroke: null }),
-                  $(go.TextBlock, "Yes",  // the label
-                    {
-                      textAlign: "center",
-                      font: "10pt helvetica, arial, sans-serif",
-                      stroke: "#333333"
-                    },
-                    new go.Binding("text").makeTwoWay())
-                )
+              $(go.Link,
+                  {
+                      routing: go.Link.AvoidsNodes,
+                      curve: go.Link.JumpOver,
+                      corner: 5, 
+                      toShortLength: 4,
+                      relinkableFrom: true,
+                      relinkableTo: true,
+                      reshapable: true,
+                      resegmentable: true,
+                      // PENTING: Binding yang eksplisit untuk port
+                      fromPortId: "",
+                      toPortId: "",
+                      mouseEnter: function(e, link) { 
+                          link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; 
+                      },
+                      mouseLeave: function(e, link) { 
+                          link.findObject("HIGHLIGHT").stroke = "transparent"; 
+                      }
+                  },
+                  // Binding eksplisit untuk mempertahankan port connections
+                  new go.Binding("fromPortId", "fromPort"),
+                  new go.Binding("toPortId", "toPort"),
+                  new go.Binding("points").makeTwoWay(),
+                  $(go.Shape,  // highlight shape
+                      { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
+                  $(go.Shape,  // link path shape
+                      { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
+                  $(go.Shape,  // arrowhead
+                      { toArrow: "standard", stroke: null, fill: "gray"}),
+                  $(go.Panel, "Auto",  // link label
+                      { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5},
+                      new go.Binding("visible", "visible").makeTwoWay(),
+                      $(go.Shape, "RoundedRectangle",
+                          { fill: "#F8F8F8", stroke: null }),
+                      $(go.TextBlock, "Yes",
+                          {
+                              textAlign: "center",
+                              font: "10pt helvetica, arial, sans-serif",
+                              stroke: "#333333"
+                          },
+                          new go.Binding("text").makeTwoWay())
+                  )
               );
             // Make link labels visible if coming out of a "conditional" node.
             // This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
@@ -572,7 +648,8 @@
                       } else if (linkIndex === 1) {
                           labelText = "No";
                       } else {
-                          labelText = "Option " + (linkIndex + 1);
+                          labelText = null; 
+                          label.visible = false;
                       }
                       
                       // Update teks label
@@ -583,26 +660,39 @@
               }
             }
             // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
-            myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
-            myDiagram.toolManager.relinkingTool.temporaryLink.routing = go.Link.Orthogonal;
+            // myDiagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
+            // myDiagram.toolManager.relinkingTool.temporaryLink.routing = go.Link.Orthogonal;
+
+            myDiagram.toolManager.linkingTool = new go.LinkingTool();
+            myDiagram.toolManager.linkingTool.portGravity = 1; 
+            myDiagram.toolManager.linkingTool.archetypeLinkData = { routing: go.Link.Orthogonal };
+
+            myDiagram.toolManager.linkingTool.insertLink = function(fromnode, fromport, tonode, toport) {
+                var newlink = go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
+                
+                // Pastikan link menggunakan port yang benar-benar dipilih user
+                if (newlink !== null) {
+                    myDiagram.model.setFromKeyForLinkData(newlink.data, fromnode.data.key);
+                    myDiagram.model.setToKeyForLinkData(newlink.data, tonode.data.key);
+                    myDiagram.model.setDataProperty(newlink.data, "fromPort", fromport.portId);
+                    myDiagram.model.setDataProperty(newlink.data, "toPort", toport.portId);
+                }
+                
+                return newlink;
+            };
+
             load();  // load an initial diagram from some JSON text
             // initialize the Palette that is on the left side of the page
             const paletteNodeDataArray = [];
 
-            if (allowedComponents.includes('OnPageReference')) {
-                paletteNodeDataArray.push({ category: "OnPageReference", text: "" });
-            }
-            if (allowedComponents.includes('OffPageReference')) {
-                paletteNodeDataArray.push({ category: "OffPageReference", text: "" });
-            }
             if (allowedComponents.includes('Terminator')) {
                 paletteNodeDataArray.push({ category: "Terminator", text: "Start/End"});
             }
             if (allowedComponents.includes('Process')) {
-                paletteNodeDataArray.push({ text: "Process" });
+                paletteNodeDataArray.push({ category: "Process", text: "Process" });
             }
             if (allowedComponents.includes('Decision')) {
-                paletteNodeDataArray.push({ text: "Decision", figure: "Diamond" });
+                paletteNodeDataArray.push({ category: "Decision", text: "Decision", figure: "Diamond" });
             }
             if (allowedComponents.includes('InputOutput')) {
                 paletteNodeDataArray.push({ category: "InputOutput", text: "Input/Output" });
@@ -621,6 +711,12 @@
             }
             if (allowedComponents.includes('Preparation')) {
                 paletteNodeDataArray.push({ category: "Preparation", text: "Preparation" });
+            }
+            if (allowedComponents.includes('OnPageReference')) {
+                paletteNodeDataArray.push({ category: "OnPageReference", text: "" });
+            }
+            if (allowedComponents.includes('OffPageReference')) {
+                paletteNodeDataArray.push({ category: "OffPageReference", text: "" });
             }
 
             myPalette =
@@ -648,9 +744,19 @@
       function showPorts(node, show) {
           var diagram = node.diagram;
           if (!diagram || diagram.isReadOnly || !diagram.allowLink) return;
+          
           node.ports.each(function(port) {
-              port.stroke = (show ? "white" : null);
-            });
+              if (show) {
+                  // Tampilkan port dengan visual yang lebih jelas
+                  port.stroke = "white";
+                  port.strokeWidth = 3;
+                  port.fill = "rgba(255, 255, 255, 0.3)";
+              } else {
+                  port.stroke = null;
+                  port.strokeWidth = 1;
+                  port.fill = "transparent";
+              }
+          });
       }
       
       function save() {
@@ -659,7 +765,19 @@
       }
       
       function load() {
+          const hasLocalData = loadFromLocalStorage();
+    
+          if (!hasLocalData) {
+              // Jika tidak ada data lokal, gunakan default
+              const defaultModel = document.getElementById("mySavedModel").value;
+              if (!defaultModel || defaultModel.trim() === '') {
+                  document.getElementById("mySavedModel").value = '{ "nodeDataArray": [], "linkDataArray": [] }';
+              }
+          }
+
           myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+
+          setupAutoSave();
       }
       
       // function makeSVG() {
@@ -803,6 +921,10 @@
           .then(response => response.json())
           .then(data => {
               if (data.success) {
+                  clearLocalStorage();
+
+                  saveToLocalStorage();
+
                   showSuccessMessage('Flowchart berhasil disimpan! Mengalihkan...');
                   
                   setTimeout(() => {
