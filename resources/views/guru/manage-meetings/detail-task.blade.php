@@ -110,7 +110,7 @@
                                                 </th>
                                                 <th>
                                                     <span class="flex items-center">
-                                                        Kunci Jawaban
+                                                        Kunci Jawaban <span class="italic">(Expected)</span>
                                                     </span>
                                                 </th>
                                                 <th>
@@ -123,13 +123,18 @@
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{$data->question}}</td>
                                                     <td>
-                                                        @if (!empty($data->correct_answer))
-                                                            <button onclick="openFlowchartModal('{{ asset('storage/assets/flowcharts/keyAnswers/' . $data->flowchart_img) }}')" class="cursor-pointer">
-                                                                <i class="bi bi-eye p-2 text-sm rounded-lg bg-sky-500 hover:bg-sky-700 text-white cursor-pointer mr-4"> Lihat</i>
-                                                            </button>
+                                                        @php
+                                                            $encryptedQuestion = Illuminate\Support\Facades\Crypt::encrypt($data->id);
+                                                        @endphp
+
+                                                        <button onclick="window.location.href='{{ route('expected-answer', $encryptedQuestion) }}'" class="cursor-pointer">
+                                                            <i class="bi bi-eye p-2 text-sm rounded-lg bg-sky-500 hover:bg-sky-700 text-white cursor-pointer mr-4"> Lihat</i>
+                                                        </button>
+
+                                                        {{-- @if (!empty($data->correct_answer))
                                                         @else 
                                                             <span>Tidak ada kunci jawaban</span>    
-                                                        @endif
+                                                        @endif --}}
                                                     <td>
                                                     @php
                                                         $encryptedQuestion = Illuminate\Support\Facades\Crypt::encrypt($data->id);

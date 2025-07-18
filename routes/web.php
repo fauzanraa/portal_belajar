@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ManageExpectedAnswerController;
 use App\Http\Controllers\ManageAnswerController;
 use App\Http\Controllers\ManageClassController;
 use App\Http\Controllers\ManageMaterialController;
@@ -73,6 +74,8 @@ Route::prefix('teacher')->middleware('role:guru')->group(function () {
     Route::get('/manage-tasks/{id}/question', [ManageTaskController::class, 'question'])->name('question-tasks');
     Route::post('/manage-tasks/{id}/store-question', [ManageTaskController::class, 'storeQuestion'])->name('store-questions');
     Route::post('/manage-tasks/{id}/update-components', [ManageTaskController::class, 'updateComponentSettings'])->name('update-components');
+    Route::get('/manage-tasks/{id}/expected-answer', [ManageExpectedAnswerController::class, 'index'])->name('expected-answer');
+    Route::post('/manage-tasks/{id}/expected-answer/update', [ManageExpectedAnswerController::class, 'update'])->name('update-expected-answer');
     Route::get('/manage-tasks/{id}/draw-answer', [ManageAnswerController::class, 'index'])->name('draw-correct-answer');
     Route::post('/manage-tasks/{id}/draw-answer/store', [ManageAnswerController::class, 'store'])->name('store-correct-answer');
     Route::get('/manage-tasks/{id}/draw-answer/edit', [ManageAnswerController::class, 'editAnswer'])->name('edit-correct-answer');
