@@ -8,15 +8,15 @@
 
     <div class="w-full">
         <div class="mt-10">
-            <div class="p-5 px-8 rounded-l-2xl bg-white relative group">
+            <div class="p-5 px-8 rounded-l-2xl bg-white relative group min-h-[200px]">
                 <p class="font-bold text-4xl">Halo, Admin!</p>
-                <i class="bi bi-person-workspace absolute bottom-2 right-3 text-gray-500 opacity-30 text-5xl"></i>
+                <img src="{{asset('img/avatar-user-male.png')}}" alt="" class="absolute right-0 bottom-0 w-60 h-60 transform  -translate-x-5 translate-y-1">
             </div>
         </div>
     </div>
 
     <div class="flex gap-6 w-full">
-        <div class="w-2/3">
+        <div class="w-full">
             <div class="flex flex-col gap-6 flex-1">
                 <div class="flex gap-6">
                     <div class="mt-10 flex-1">
@@ -35,7 +35,7 @@
                     </div>
                 </div>
 
-                <div class="mt-3">
+                {{-- <div class="mt-3">
                     <div class="w-full bg-white rounded-lg shadow-sm p-4 md:p-6">
                         <div class="flex justify-between border-gray-200 border-b dark:border-gray-700 pb-3">
                             <dl>
@@ -44,11 +44,11 @@
                         </div>
                         <div id="bar-chart"></div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
 
-        <div class="w-1/3 flex justify-end">
+        {{-- <div class="w-1/3 flex justify-end">
             <div class="w-full">
                 <div class="mt-10">
                     <div class="bg-white rounded-lg shadow-sm p-4 md:p-6">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 
 @endsection

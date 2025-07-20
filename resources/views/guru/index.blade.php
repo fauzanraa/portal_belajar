@@ -26,8 +26,8 @@
                     <div class="flex justify-center py-1 text-black">
                         <i class="bi bi-receipt text-5xl mr-10 rounded-xl py-2 px-5"></i>
                         <div class="grid grid-rows-2">
-                            <p class="">1</p>
-                            <p class="">Jumlah Modul</p>
+                            {{-- <p class="">1</p> --}}
+                            <p class="">Modul</p>
                         </div>
                     </div>
                 </div>
@@ -37,8 +37,8 @@
                     <div class="flex justify-center py-1 text-black">
                         <i class="bi bi-activity text-5xl mr-10 rounded-xl py-2 px-5"></i>
                         <div class="grid grid-rows-2">
-                            <p class="">1/1</p>
-                            <p class="">Pre-Test Dikerjakan</p>
+                            {{-- <p class="">1/1</p> --}}
+                            <p class="">Pre-Test</p>
                         </div>
                     </div>
                 </div>
@@ -48,8 +48,8 @@
                     <div class="flex justify-center py-1 text-black">
                         <i class="bi bi-activity text-5xl mr-10 rounded-xl py-2 px-5"></i>
                         <div class="grid grid-rows-2">
-                            <p class="">1/1</p>
-                            <p class="">Post-Test Dikerjakan</p>
+                            {{-- <p class="">1/1</p> --}}
+                            <p class="">Post-Test</p>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <div class="flex justify-between gap-6 w-full">
+    {{-- <div class="flex justify-between gap-6 w-full">
         <div class="mt-10 flex-1 max-w-xs">
             <div class="max-w-sm w-full bg-white rounded-lg shadow-sm p-4 md:p-6 mx-auto" style="max-width: 800px;"> <!-- Menambahkan mx-auto dan max-width -->
                 <div class="flex justify-between pb-4 mb-4 border-b border-gray-200">
@@ -118,7 +118,7 @@
             </div>
 
         </div>
-    </div>
+    </div> --}}
 
 @endsection
 
