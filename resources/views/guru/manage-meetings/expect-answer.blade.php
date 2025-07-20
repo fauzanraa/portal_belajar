@@ -186,7 +186,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-600 mb-1">Category:</label>
                             <input type="text" class="node-category w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                                value="${nodeData.category || ''}" placeholder="Masukkan category" readonly>
+                                value="${nodeData.category || ''}" placeholder="Masukkan category">
                         </div>
                     </div>
                 `;
