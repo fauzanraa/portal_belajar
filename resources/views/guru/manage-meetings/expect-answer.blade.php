@@ -172,7 +172,12 @@
                     <div class="mb-3">
                         <h4 class="font-medium text-gray-700">Node ${index + 1}</h4>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Key:</label>
+                            <input type="text" class="node-key w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                value="${nodeData.key || ''}" placeholder="Masukkan text" readonly>
+                        </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-600 mb-1">Text:</label>
                             <input type="text" class="node-text w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
@@ -199,10 +204,12 @@
                 const updatedNodeDataArray = [];
 
                 nodeGroups.forEach(group => {
+                    const key = group.querySelector('.node-key').value || '';
                     const text = group.querySelector('.node-text').value || '';
                     const category = group.querySelector('.node-category').value || '';
 
                     updatedNodeDataArray.push({
+                        key: key,
                         text: text,
                         category: category,
                     });
