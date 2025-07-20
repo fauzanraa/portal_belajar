@@ -40,10 +40,10 @@ class ManageMaterialSessionController extends Controller
             
             DB::commit();
 
-            return redirect()->route('detail-materials', $id)->with('success', 'Session created successfully!');
+            return redirect()->route('detail-materials', $id)->with('success', 'Berhasil menambah data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create session: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambah data!');
         }
     }
 }

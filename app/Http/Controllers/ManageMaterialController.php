@@ -54,10 +54,10 @@ class ManageMaterialController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Material created successfully!');
+            return redirect()->back()->with('success', 'Berhasil menambah data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create material: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambah data!');
         }
     }
 
@@ -97,10 +97,10 @@ class ManageMaterialController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'Material created successfully!' .$path);
+            return redirect()->back()->with('success', 'Berhasil menambah data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to create material: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambah data!');
         }
     }
 }

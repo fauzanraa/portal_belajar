@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('task_session_id');
             $table->text('question');
-            $table->enum('type', ['main', 'bonus']);
+            $table->enum('type', ['intro', 'study_case']);
             $table->json('correct_answer')->nullable();
             $table->text('flowchart_img')->nullable();
             $table->timestamps();
