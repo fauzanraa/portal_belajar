@@ -83,6 +83,8 @@ class ManageProgressController extends Controller
 
         $taskSession = TaskSession::with('meeting')->find($studentSession->task_session_id);
 
+        $meetingId = $taskSession->meeting_id;
+
         $taskQuestions = TaskQuestion::where('task_session_id', $taskSession->id)->get();
         
         $taskAnswers = TaskAnswer::where('task_session_id', $taskSession->id)
@@ -95,23 +97,37 @@ class ManageProgressController extends Controller
             $ratioError = 100;
         }
 
-        $taskPreTest = TaskSession::with('studentTaskSession')
-        ->where('meeting_id', $taskSession->meeting_id)
-        ->where('type', 'pretest')
-        ->first();
-        $taskPostTest = TaskSession::with('studentTaskSession')
-        ->where('meeting_id', $taskSession->meeting_id)
-        ->where('type', 'posttest')
-        ->first();
+        $tasks = StudentTaskSession::where('student_id', $studentSession->student_id)
+        ->whereHas('taskSession', function ($query) use ($meetingId) {
+            $query->where('meeting_id', $meetingId)
+                ->whereIn('type', ['pretest', 'posttest']);
+        })
+        ->with('taskSession') 
+        ->get()
+        ->keyBy(fn($item) => $item->taskSession->type);
 
-        if ($taskPreTest && $taskPostTest) {
-            $scorePreTest = $taskPreTest->studentTaskSession()->score ?? 0;
-            $scorePostTest = $taskPostTest->studentTaskSession()->score ?? 0;
-            if ($scorePostTest >= $scorePreTest){
-                $evaluation = "Paham";
-            } else {
-                $evaluation = "Belum Paham";
+        $pretest = $tasks['pretest'] ?? null;
+        $posttest = $tasks['posttest'] ?? null;
+
+        $evaluation = null;
+
+        if ($pretest && $posttest) {
+            $preScore = $pretest->score ?? 0;
+            $postScore = $posttest->score ?? 0;
+
+            if ($postScore > $preScore) {
+                if ($postScore > 60) {
+                    $evaluation = "Siswa menunjukkan pemahaman yang lebih baik terhadap materi setelah mengikuti pembelajaran.";
+                } else {
+                    $evaluation = "Nilai posttest siswa masih di bawah 60. Disarankan untuk memberikan penguatan tambahan pada materi terkait.";
+                }
+            } elseif ($postScore < $preScore) {
+                $evaluation = "Siswa mengalami penurunan skor. Disarankan guru mengecek kembali bagian yang belum dipahami siswa.";
+            } elseif ($postScore = $preScore) {
+                $evaluation = "Siswa mungkin membutuhkan pendekatan belajar yang lain untuk memperdalam materi.";
             }
+        } else {
+            $evaluation = "Data pretest atau posttest belum lengkap untuk dievaluasi.";
         }
 
         $answersMap = [];

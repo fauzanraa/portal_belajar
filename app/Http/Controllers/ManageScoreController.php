@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ManageScoreController extends Controller
 {
@@ -28,8 +29,14 @@ class ManageScoreController extends Controller
         return view('guru.manage-scores.index', compact('sessionMeeting'));
     }
 
-    public function detail($idModul){
+    public function detail(Request $request, $idModul){
         $decryptedModul = decrypt($idModul);
+
+        $accessFilter = $request->get('access', 'system');
+    
+        if (!in_array($accessFilter, ['system', 'non_system'])) {
+            $accessFilter = 'system';
+        }
 
         $taskSession = TaskSession::where('meeting_id', $decryptedModul)->first();
 
@@ -38,6 +45,7 @@ class ManageScoreController extends Controller
         ->join('task_sessions', 'task_sessions.id', '=', 'student_task_sessions.task_session_id')
         ->join('meetings', 'meetings.id', '=', 'task_sessions.meeting_id')
         ->where('meetings.id', $decryptedModul)
+        ->where('student_task_sessions.access', $accessFilter)
         ->select(
             'student_task_sessions.*', 
             'students.name',
@@ -46,7 +54,7 @@ class ManageScoreController extends Controller
             )
         ->get();
 
-        return view('guru.manage-scores.detail', compact('dataSiswa', 'taskSession'));
+        return view('guru.manage-scores.detail', compact('dataSiswa', 'taskSession', 'accessFilter'));
     }
 
     public function exportExcel($idModul){
@@ -64,12 +72,16 @@ class ManageScoreController extends Controller
                 'classrooms.class_name as Kelas',
                 'task_sessions.type as Tipe Tugas',
                 'meetings.title as Modul', 
-                'student_task_sessions.score as Nilai'
+                'student_task_sessions.score as Nilai',
+                DB::raw("CASE WHEN student_task_sessions.access = 'system' THEN 'Kelas Eksperimen' ELSE 'Kelas Kontrol' END as Tipe_Kelas")
             )
             ->get()
             ->toArray();
 
-        $filename = storage_path('app/public/excel' . $taskSession->id . '.xlsx');
+        $modulTitle = $taskSession->meeting->title ?? 'modul';    
+
+        // $filename = storage_path('app/public/excel' . Str::slug($modulTitle) . '.xlsx');
+        $filename = (Str::slug($modulTitle) . '.xlsx');
 
         SimpleExcelWriter::create($filename)
             ->addRows($dataSiswa);

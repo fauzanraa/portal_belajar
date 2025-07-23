@@ -165,8 +165,12 @@ class ManageTaskController extends Controller
         try {
             DB::beginTransaction();
 
-            $open_at = ($request->start . ' ' . $request->time_start);
-            $close_at = ($request->end . ' ' . $request->time_end);
+            $start = Carbon::parse($request->start)->format('Y-m-d');
+            $time_start = Carbon::parse($request->time_start)->format('H:i');
+            $end = Carbon::parse($request->end)->format('Y-m-d');
+            $time_end = Carbon::parse($request->time_end)->format('H:i');
+            $open_at = Carbon::createFromFormat('Y-m-d H:i', $start . ' ' . $time_start);
+            $close_at = Carbon::createFromFormat('Y-m-d H:i', $end . ' ' . $time_end);
 
             $task = TaskSession::find($request->task_id);
             $task->name = $request->task;
@@ -180,7 +184,7 @@ class ManageTaskController extends Controller
             return redirect()->back()->with('success', 'Berhasil mengupdate data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal mengupdate data!');
+            return redirect()->back()->with('error', 'Gagal mengupdate data!'. $e->getMessage());
         }
     }
 

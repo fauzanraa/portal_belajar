@@ -67,7 +67,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-purple-600 text-sm font-medium uppercase">Hasil Evaluasi</p>
-                                    <p class="text-2xl font-bold text-purple-700 mt-2">{{$evaluation}}</p>
+                                    <p class="text-xs font-bold text-purple-700 mt-2">{{$evaluation}}</p>
                                 </div>
                                 <div class="bg-purple-500 rounded-full p-3">
                                     <i class="bi bi-lightning text-white text-xl"></i>
