@@ -26,7 +26,7 @@ class StudentTaskSession extends Model
     }
 
     public function taskQuestion(){
-        return $this->hasMany(TaskQuestion::class, 'task_session_id');
+        return $this->hasMany(TaskQuestion::class, 'task_session_id', 'task_session_id');
     }
 
     public function taskAnswer(){

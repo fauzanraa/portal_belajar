@@ -20,17 +20,14 @@
             </div>
 
             @if ($taskSession->type == 'pretest')
-                <!-- Interactive Success Message -->
                 <div class="flex justify-center items-center min-h-[400px] bg-gradient-to-br from-blue-50 to-indigo-100 rounded-bl-xl border border-blue-200 shadow-lg">
                     <div class="text-center max-w-md mx-auto p-8">
-                        <!-- Success Animation Icon -->
                         <div class="relative mb-6">
                             <div class="w-24 h-24 mx-auto bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg animate-bounce">
                                 <i class="bi bi-check-lg text-white text-4xl"></i>
                             </div>
                         </div>
 
-                        <!-- Success Message -->
                         <div class="mb-8">
                             <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 mb-4">
                                 <p class="text-lg text-gray-700 leading-relaxed">
@@ -40,7 +37,6 @@
                             </div>
                         </div>
 
-                        <!-- Back Button - Centered -->
                         @php
                             $encryptedTeacher = Illuminate\Support\Facades\Crypt::encrypt($taskSession->meeting->created_by);
                             $encryptedMeeting = Illuminate\Support\Facades\Crypt::encrypt($taskSession->meeting_id);
@@ -55,10 +51,8 @@
                     </div>
                 </div>
             @else
-                <!-- Statistics Cards -->
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <!-- Nilai Card -->
                         <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-l-4 border-green-500">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -71,7 +65,6 @@
                             </div>
                         </div>
 
-                        <!-- Waktu Pengerjaan Card -->
                         <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-l-4 border-blue-500">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -84,7 +77,6 @@
                             </div>
                         </div>
 
-                        <!-- Rasio Kesalahan Card -->
                         <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border-l-4 border-orange-500">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -102,7 +94,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-purple-600 text-sm font-medium uppercase">Hasil Evaluasi</p>
-                                    <p class="text-2xl font-bold text-purple-700 mt-2">{{$evaluation}}</p>
+                                    <p class="text-xm font-bold text-purple-700 mt-2">{{$evaluation}}</p>
                                 </div>
                                 <div class="bg-purple-500 rounded-full p-3">
                                     <i class="bi bi-lightning text-white text-xl"></i>
@@ -111,7 +103,6 @@
                         </div>
                     </div>
 
-                    <!-- Comparison Section -->
                     <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center">
@@ -143,7 +134,6 @@
                             </div>
                         </div>
 
-                        <!-- Question Number Navigation -->
                         <div class="bg-white rounded-lg border border-gray-300 p-4 mb-6">
                             <div class="flex items-center mb-3">
                                 <div class="bg-purple-100 rounded-lg p-2 mr-3">
@@ -163,10 +153,8 @@
                             </div>
                         </div>
 
-                        <!-- Flowchart Display Area -->
                         <div id="flowchartContainer">
                             <div id="comparisonView" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <!-- Student Side -->
                                 <div class="bg-white rounded-lg border-2 border-blue-300 p-4">
                                     <div class="flex items-center mb-4 pb-2 border-b border-blue-200">
                                         <div class="bg-blue-100 rounded-lg p-2 mr-3">
@@ -188,7 +176,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Teacher Side -->
                                 <div class="bg-white rounded-lg border-2 border-green-300 p-4">
                                     <div class="flex items-center mb-4 pb-2 border-b border-green-200">
                                         <div class="bg-green-100 rounded-lg p-2 mr-3">
@@ -212,7 +199,6 @@
                             </div>
                         </div>
 
-                        <!-- Back Button -->
                         @php
                             $from = request()->query('from');
 
@@ -226,7 +212,6 @@
                         @endphp
                         <div class="flex justify-center mt-6">
                             <a href="{{ $backRoute }}"
-                            {{-- <a href="{{ route('detail-meetings', ['idTeacher' => $encryptedTeacher, 'idMeeting' => $encryptedMeeting]) }}"  --}}
                             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-semibold rounded-xl">
                                 <i class="bi bi-arrow-left mr-3 text-lg"></i>
                                 <span class="text-lg">Kembali</span>

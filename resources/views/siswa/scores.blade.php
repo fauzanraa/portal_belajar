@@ -7,14 +7,12 @@
     </div>
         
     <div class="w-full bg-white mt-10 rounded-xl shadow-lg overflow-hidden">
-        <!-- Header Section -->
         <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <div class="bg-white bg-opacity-20 rounded-xl p-3 mr-4 backdrop-blur-sm">
                         <i class="bi bi-trophy text-blue-500 text-2xl"></i>
                     </div>
-                    {{-- <i class="bi bi-trophy text-3xl text-yellow-300 mr-3"></i> --}}
                     <div>
                         <h2 class="text-xl font-bold text-white">List Nilai</h2>
                     </div>
@@ -26,39 +24,29 @@
             </div>
         </div>
 
-        <!-- Meetings List -->
         @if (isset($completedModules) && $completedModules->count() > 0)
             <div class="divide-y divide-gray-200">
-                <div class="group hover:bg-blue-50 transition-all duration-300 cursor-pointer">
-                    @php $index = 1 @endphp
-                    @foreach ($completedModules as $completedIndex => $completed)
+                @php $index = 1 @endphp
+                @foreach ($completedModules as $completedIndex => $completed)
+                    <div class="group hover:bg-blue-50 transition-all duration-300 cursor-pointer">
                         <div class="px-6 py-5">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4">
-                                    <!-- Meeting Number -->
                                     <div class="flex-shrink-0">
                                         <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                                             <span class="text-blue-600 font-bold text-lg">{{$index}}</span>
                                         </div>
                                     </div>
                                     
-                                    <!-- Meeting Info -->
                                     <div class="flex-1">
                                         <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                                             {{$completed->title}} : {{$completed->description}}
                                         </h3>
-                                        {{-- <p class="text-sm text-gray-600 mt-1">
-                                            Materi dasar algoritma dan flowchart • 3 Tugas • 1 Quiz
-                                        </p> --}}
                                         <div class="flex items-center mt-2 space-x-4">
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 <i class="bi bi-check-circle-fill mr-1"></i>
                                                 Selesai
                                             </span>
-                                            {{-- <span class="text-xs text-gray-500">
-                                                <i class="bi bi-calendar mr-1"></i>
-                                                Dikerjakan: 15 Nov 2024
-                                            </span> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -71,13 +59,9 @@
                                     } else {
                                         $colorClass = 'text-red-500';
                                     } 
+                                    $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($completed->task_session_id);
                                 @endphp
-                                <!-- Score Section -->
                                 <div class="flex items-center space-x-6">
-                                    @php
-                                        $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($completed->task_session_id);
-                                    @endphp
-                                    <!-- Details Button -->
                                     <button onclick="window.location.href='{{ route('summary', ['idTask' => $encryptedTask, 'from' => 'list-scores']) }}'"  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
                                         <i class="bi bi-eye mr-1"></i>
                                         Detail
@@ -96,8 +80,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Progress Details (Expandable) -->
+
                             <div class="mt-4 hidden group-hover:block transition-all duration-300">
                                 <div class="bg-gray-50 rounded-lg p-4">
                                     <div class="grid grid-cols-2 gap-4">
@@ -112,15 +95,15 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>          
-                    @endforeach
+                        </div>
+                    </div>
                     @php $index++ @endphp
-                </div>
+                @endforeach
             </div>
+
         @else
             <div class="flex justify-center items-center min-h-[400px] p-6">
                 <div class="max-w-md w-full">
-                    <!-- Main Card -->
                     <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-105 transition-all duration-300">
                         <div class="bg-gradient-to-br from-blue-50 to-indigo-100 px-8 py-6 text-center">
                             <div class="relative">
@@ -130,7 +113,6 @@
                             </div>
                         </div>
 
-                        <!-- Card Body -->
                         <div class="px-6 py-4 text-center">
                             <h3 class="text-xl font-bold text-gray-800 mb-3">
                                 Belum Ada Modul Terselesaikan
@@ -139,7 +121,6 @@
                                 Mulai mengerjakan tugas pada modul untuk melihat nilai dan progress anda di sini.
                             </p>
 
-                            <!-- Action Button -->
                             <a href="{{route('list-teachers')}}" 
                             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
                                 <i class="bi bi-arrow-left mr-2"></i>

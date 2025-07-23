@@ -43,7 +43,7 @@
                                         @php
                                             $studentSession = $task->studentTaskSession->where('task_session_id', $task->id)->first();
 
-                                            $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($task->id);
+                                            $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($studentSession->task_session_id);
                                         @endphp
 
                                         @if ($studentSession->status == 'finished')
@@ -117,7 +117,7 @@
                                         @php
                                             $studentSession = $task->studentTaskSession->where('task_session_id', $task->id)->first();
 
-                                            $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($task->id);
+                                            $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($studentSession->task_session_id);
                                         @endphp
 
                                         @if ($isPreTestDone)

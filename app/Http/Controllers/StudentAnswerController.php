@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Prism\Prism\Prism;
+use Prism\Prism\Enums\Provider;
 
 class StudentAnswerController extends Controller
 {
@@ -22,11 +24,16 @@ class StudentAnswerController extends Controller
         $encryptedStudent = encrypt($studentId);
 
         $taskId = decrypt($id);
-        $sessionTask = StudentTaskSession::with('taskSession', 'taskQuestion', 'taskAnswer')
+        $sessionTask = StudentTaskSession::with([
+            'taskSession',
+            'taskQuestion' => function($query) use ($taskId) {
+                $query->where('task_session_id', $taskId);
+            },
+            'taskAnswer'
+        ])
         ->where('task_session_id', $taskId)
         ->where('student_id', $studentId)
         ->first();
-        // dd($sessionTask);
 
         $questionTask = $sessionTask->taskQuestion()->get();
 
@@ -86,8 +93,12 @@ class StudentAnswerController extends Controller
                     ], 400);
                 }
 
+                $taskSession = StudentTaskSession::where('id', $id)
+                ->where('student_id', $request->student_id)
+                ->first();
+
                 $answer = new TaskAnswer();
-                $answer->task_session_id = $id;
+                $answer->task_session_id = $taskSession->task_session_id;
                 $answer->task_question_id = $answerData['question_id'];
                 $answer->student_id = $request->student_id;
                 $answer->answer = json_encode($studentAnswerData);
@@ -103,20 +114,35 @@ class StudentAnswerController extends Controller
                     if (empty($studentAnswerData['nodeDataArray']) && empty($studentAnswerData['linkDataArray'])) {
                         $score = 0;
                     } else {
+                        // try {
+                        //     [$score, $correctElements, $totalElements] = $this->evaluateFlowchartWithAI($correctAnswerData, $studentAnswerData);
+                        // } catch (\Exception $e) {
+                        //     // fallback jika AI gagal
+                        //     Log::error("Evaluasi AI bermasalah: ".$e->getMessage());
+                        //     $score = 0;
+                        //     $correctElements = 0;
+                        //     $totalElements = count($correctAnswerData['nodeDataArray'] ?? []) + count($correctAnswerData['linkDataArray'] ?? []);
+                        // }
+
                         [$correctElements, $totalElements] = $this->evaluateFlowchartAnswer($correctAnswerData, $studentAnswerData);
                         $totalCorrectElements += $correctElements;
                         $totalExpectedElements += $totalElements;
                         $score = $totalElements > 0 ? ($correctElements / $totalElements) * 100 : 0;
                     }
 
+                    // $totalCorrectElements += $correctElements;
+                    // $totalExpectedElements += $totalElements;
                     $totalScore += $score;
                     $questionCount++;
+
+                    // $totalScore += $score;
+                    // $questionCount++;
                 }
             }
 
             $averageScore = $questionCount > 0 ? round($totalScore / $questionCount, 2) : 0;
 
-            $taskSession = StudentTaskSession::where('task_session_id', $id)
+            $taskSession = StudentTaskSession::where('id', $id)
                 ->where('student_id', $request->student_id)
                 ->first();
 
@@ -179,6 +205,41 @@ class StudentAnswerController extends Controller
         ];
     }
 
+    // private function evaluateFlowchartWithAI(array $expected, array $student): array{
+    //     $system = "Kamu adalah AI evaluator untuk flowchart. Berdasarkan dua data JSON berikut, nilai jawaban siswa terhadap jawaban benar. Hitung jumlah elemen yang benar (node atau link), total elemen yang seharusnya dilihat dari node dan links kunci jawaban, dan skor dalam bentuk persentase (0-100). Format output JSON hanya seperti ini: {\"score\": 85, \"correct_elements\": 10, \"total_elements\": 12}";
+
+    //     $prompt = "Berikut adalah jawaban benar:\n" . json_encode($expected, JSON_PRETTY_PRINT) .
+    //             "\n\nBerikut adalah jawaban siswa:\n" . json_encode($student, JSON_PRETTY_PRINT) .
+    //             "\n\nTolong nilai sesuai instruksi di atas.";
+
+    //     $response = Prism::text()
+    //         ->using(Provider::OpenAI, 'gpt-4.1')
+    //         ->withSystemPrompt($system)
+    //         ->withPrompt($prompt)
+    //         ->asText();
+
+    //     $responseText = $response->text;
+
+    //     Log::info('AI Raw Response', ['response' => $responseText]);
+
+    //     $aiResult = json_decode($responseText, true);
+
+    //     if (!is_array($aiResult) ||
+    //         !isset($aiResult['score'], $aiResult['correct_elements'], $aiResult['total_elements']) ||
+    //         !is_numeric($aiResult['score']) ||
+    //         !is_numeric($aiResult['correct_elements']) ||
+    //         !is_numeric($aiResult['total_elements'])) {
+
+    //         throw new \Exception("Response AI tidak valid atau tidak bisa diproses: " . json_encode($aiResult));
+    //     }
+
+    //     return [
+    //         (float) $aiResult['score'],
+    //         (int) $aiResult['correct_elements'],
+    //         (int) $aiResult['total_elements']
+    //     ];
+    // }
+
     private function evaluateFlowchartAnswer(array $expected, array $student): array {
         $normalizeNodes = fn($arr) => array_map(fn($n) => [
             'text' => strtolower(trim($n['text'] ?? '')),
@@ -204,8 +265,11 @@ class StudentAnswerController extends Controller
             }, $links);
         };
 
-        $compareItems = fn(array $a, array $b): bool =>
-            $a['text'] === $b['text'] && $a['category'] === $b['category'];
+        $compareItems = fn(array $a, array $b): bool => 
+            strtolower($a['category']) === strtolower($b['category']) &&
+            (
+                similar_text(strtolower($a['text']), strtolower($b['text']), $percent) && $percent >= 70
+            );
 
         $compareLinks = fn(array $a, array $b): bool =>
             $a['from'] === $b['from'] && $a['to'] === $b['to'] && $a['text'] === $b['text'];
@@ -246,13 +310,15 @@ class StudentAnswerController extends Controller
 
         $decryptedId = Crypt::decrypt($id);
 
-        $taskSession = TaskSession::with('meeting')->find($decryptedId);
-
         $studentSession = StudentTaskSession::with('taskSession')
         ->where('task_session_id', $decryptedId)
         ->where('student_id', $studentId)
         ->first();
 
+        $taskSession = TaskSession::with('meeting')->find($decryptedId);
+
+        $meetingId = $taskSession->meeting_id;
+        
         $taskQuestions = TaskQuestion::where('task_session_id', $taskSession->id)->get();
         
         $taskAnswers = TaskAnswer::where('task_session_id', $taskSession->id)
@@ -269,29 +335,40 @@ class StudentAnswerController extends Controller
         // $rasioError = round(100 - $finalScore, 2);
 
         if($studentSession->total_elements != 0 && $studentSession->correct_elements != 0) {
-            $ratioError = (($studentSession->total_elements - $studentSession->correct_elements) / $studentSession->total_elements) * 100;
+            $ratioError = round((($studentSession->total_elements - $studentSession->correct_elements) / $studentSession->total_elements) * 100, 2);
         } else {
             $ratioError = 100;
         }
+
+        $tasks = StudentTaskSession::where('student_id', $studentId)
+        ->whereHas('taskSession', function ($query) use ($meetingId) {
+            $query->where('meeting_id', $meetingId)
+                ->whereIn('type', ['pretest', 'posttest']);
+        })
+        ->with('taskSession') 
+        ->get()
+        ->keyBy(fn($item) => $item->taskSession->type);
             
+        $pretest = $tasks['pretest'] ?? null;
+        $posttest = $tasks['posttest'] ?? null;
 
-        $taskPreTest = TaskSession::with('studentTaskSession')
-        ->where('meeting_id', $taskSession->meeting_id)
-        ->where('type', 'pretest')
-        ->first();
-        $taskPostTest = TaskSession::with('studentTaskSession')
-        ->where('meeting_id', $taskSession->meeting_id)
-        ->where('type', 'posttest')
-        ->first();
+        $evaluation = null;
 
-        if ($taskPreTest && $taskPostTest) {
-            $scorePreTest = $taskPreTest->studentTaskSession()->score ?? 0;
-            $scorePostTest = $taskPostTest->studentTaskSession()->score ?? 0;
-            if ($scorePostTest >= $scorePreTest){
-                $evaluation = "Paham";
+        if ($pretest && $posttest) {
+            $preScore = $pretest->score ?? 0;
+            $postScore = $posttest->score ?? 0;
+
+            if ($postScore > $preScore) {
+                $diff = number_format($postScore - $preScore, 2);
+                $evaluation = "Nilai kamu meningkat {$diff} poin! Terlihat kamu memahami materi dengan baik setelah belajar.";
+            } elseif ($postScore < $preScore) {
+                $diff = number_format($preScore - $postScore, 2);
+                $evaluation = "Nilai kamu turun {$diff} poin. Coba review kembali materi dan diskusikan dengan guru atau teman ya!";
             } else {
-                $evaluation = "Belum Paham";
+                $evaluation = "Yuk, tingkatkan pemahamanmu untuk hasil yang lebih baik!";
             }
+        } else {
+            $evaluation = "Data pretest atau posttest belum lengkap untuk dievaluasi.";
         }
 
         $answersMap = [];

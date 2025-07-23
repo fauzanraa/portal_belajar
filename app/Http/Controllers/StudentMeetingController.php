@@ -34,7 +34,7 @@ class StudentMeetingController extends Controller
 
         $jumlahTugas = $studentTasks->count();
         $jumlahTugasSelesai = $studentTasks->where('status', 'finished')->count();
-        $progress = $jumlahTugas > 0 ? ($jumlahTugasSelesai / $jumlahTugas) * 100 : 0;
+        $progress = round($jumlahTugas > 0 ? ($jumlahTugasSelesai / $jumlahTugas) * 100 : 0, 2);
         
         return view('siswa.list-teachers', compact('sessionMeeting', 'progress'));
     }
@@ -110,7 +110,12 @@ class StudentMeetingController extends Controller
         $decryptedIdMeeting = decrypt($idMeeting);
         $meeting = Meeting::with('material', 'task')->find($decryptedIdMeeting);
 
-        $sessionMaterial = MaterialSession::with('meeting', 'studentMaterialSession')
+        $sessionMaterial = MaterialSession::with([
+            'meeting',
+            'studentMaterialSession' => function($query) use ($studentId) {
+                $query->where('student_id', $studentId);
+            }
+        ])
         ->where('meeting_id', $meeting->id)
         ->where('created_by', $teacher->nip)
         ->whereHas('studentMaterialSession', function($query) use ($studentId) {
@@ -118,7 +123,12 @@ class StudentMeetingController extends Controller
         })
         ->get();
 
-        $sessionTask = TaskSession::with('meeting', 'studentTaskSession')
+        $sessionTask = TaskSession::with([
+            'meeting',
+            'studentTaskSession' => function($query) use ($studentId) {
+                $query->where('student_id', $studentId);
+            }
+        ])
         ->where('meeting_id', $meeting->id)
         ->where('created_by', $teacher->nip)
         ->whereHas('studentTaskSession', function($query) use ($studentId) { 
