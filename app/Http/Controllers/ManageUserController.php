@@ -70,20 +70,28 @@ class ManageUserController extends Controller
     }
 
     public function update(Request $request){
-        $request->validate([
-            'user_id' => 'required',
-            'username' => 'required',
-            'password' => 'min:5',
-        ]);
+        try {
+                $request->validate([
+                'user_id' => 'required',
+                'username' => 'required',
+                'password' => 'min:5',
+            ]);
 
-        $user = UserSystem::find($request->user_id);
-        $user->username = $request->username;
-        if($request->new_password){
-            $user->password = Hash::make($request->new_password);
+            DB::beginTransaction();
+
+            $user = UserSystem::find($request->user_id);
+            $user->username = $request->username;
+            if($request->new_password){
+                $user->password = Hash::make($request->new_password);
+            }
+            $user->save();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Berhasil mengudpate data!');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('success', 'Gagal mengudpate data!');
         }
-        $user->save();
-
-        return back();
     }
 
     public function delete($id)
@@ -98,10 +106,10 @@ class ManageUserController extends Controller
             
             DB::commit();
 
-            return redirect()->back()->with('success', 'User deleted successfully!');
+            return redirect()->back()->with('success', 'Berhasil menghapus data!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to delete user: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus data!');
         }
     }
 }

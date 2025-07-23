@@ -102,13 +102,13 @@
     <div id="add-student-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            <div class="relative bg-white rounded-lg shadow-sm">
                 <!-- Modal header -->
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-900">
                         Tambah data siswa
                     </h3>
-                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="add-student-modal">
+                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="add-student-modal">
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                         </svg>
@@ -120,16 +120,16 @@
                     <form class="space-y-4" action="{{route('store-students')}}" method="POST">
                         @csrf
                         <div>
-                            <label for="student_nisn" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NISN</label>
+                            <label for="student_nisn" class="block mb-2 text-sm font-medium text-gray-900">NISN</label>
                             <input type="text" inputmode="numeric" name="student_nisn" id="student_nisn" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
                         </div>
                         <div>
-                            <label for="student_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Siswa</label>
+                            <label for="student_name" class="block mb-2 text-sm font-medium text-gray-900">Nama Siswa</label>
                             <input type="text" name="student_name" id="student_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
                         </div>
                         {{-- <div>
-                            <label for="school" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sekolah</label>
-                            <select id="school" name="school" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <label for="school" class="block mb-2 text-sm font-medium text-gray-900">Sekolah</label>
+                            <select id="school" name="school" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option value="" selected disabled>Pilihan Sekolah</option>
                                 @foreach ($data_sekolah as $list)
                                     @php
@@ -140,8 +140,8 @@
                             </select>
                         </div> --}}
                         <div>
-                            <label for="classroom" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kelas</label>
-                            <select id="classroom" name="classroom" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <label for="classroom" class="block mb-2 text-sm font-medium text-gray-900">Kelas</label>
+                            <select id="classroom" name="classroom" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
                                 <option value="" selected disabled>Pilihan Kelas</option>
                                 @foreach ($data_kelas as $data)
                                     <option value="{{$data->id}}">{{$data->class_name}}</option>
@@ -149,25 +149,25 @@
                             </select>
                         </div>
                         <div>
-                            <label for="radio" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jenis Kelamin</label>
+                            <label for="radio" class="block mb-2 text-sm font-medium text-gray-900">Jenis Kelamin</label>
                             <div class="flex items-center mb-4">
-                                <input id="laki-laki" type="radio" value="L" name="student_gender" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600">
-                                <label for="laki-laki" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Laki-laki</label>
+                                <input id="laki-laki" type="radio" value="L" name="student_gender" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                                <label for="laki-laki" class="ms-2 text-sm font-medium text-gray-900">Laki-laki</label>
                             </div>
                             <div class="flex items-center">
-                                <input id="perempuan" type="radio" value="P" name="student_gender" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600">
-                                <label for="perempuan" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Perempuan</label>
+                                <input id="perempuan" type="radio" value="P" name="student_gender" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                                <label for="perempuan" class="ms-2 text-sm font-medium text-gray-900">Perempuan</label>
                             </div>
                         </div>
                         <div>
-                            <label for="student_address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Alamat Domisili</label>
+                            <label for="student_address" class="block mb-2 text-sm font-medium text-gray-900">Alamat Domisili</label>
                             <input type="text" name="student_address" id="student_address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
                         </div>
                         <div>
-                            <label for="student_birthday" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tanggal Lahir</label>
+                            <label for="student_birthday" class="block mb-2 text-sm font-medium text-gray-900">Tanggal Lahir</label>
                             <div class="relative max-w-sm">
                                 <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                                     </svg>
                                 </div>
@@ -184,13 +184,13 @@
     <div id="edit-student-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            <div class="relative bg-white rounded-lg shadow-sm ">
                 <!-- Modal header -->
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-900">
                         Edit data siswa
                     </h3>
-                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="edit-student-modal">
+                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="edit-student-modal">
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                         </svg>
@@ -204,16 +204,16 @@
                         @method('PUT')
                         <input type="text" name="student_id" id="student_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" hidden />
                         <div>
-                            <label for="student_nisn_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NISN</label>
+                            <label for="student_nisn_edit" class="block mb-2 text-sm font-medium text-gray-900">NISN</label>
                             <input type="text" inputmode="numeric" name="student_nisn_edit" id="student_nisn_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
                         </div>
                         <div>
-                            <label for="student_name_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Siswa</label>
+                            <label for="student_name_edit" class="block mb-2 text-sm font-medium text-gray-900">Nama Siswa</label>
                             <input type="text" name="student_name_edit" id="student_name_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
                         </div>
                         {{-- <div>
-                            <label for="school_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sekolah</label>
-                            <select id="school_edit" name="school_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <label for="school_edit" class="block mb-2 text-sm font-medium text-gray-900">Sekolah</label>
+                            <select id="school_edit" name="school_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option value="" selected disabled>Pilihan Sekolah</option>
                                 @foreach ($data_sekolah as $list)
                                     <option value="{{$list->id}}">{{$list->name_school}}</option>
@@ -221,8 +221,8 @@
                             </select>
                         </div> --}}
                         <div>
-                            <label for="classroom_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kelas</label>
-                            <select id="classroom_edit" name="classroom_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <label for="classroom_edit" class="block mb-2 text-sm font-medium text-gray-900">Kelas</label>
+                            <select id="classroom_edit" name="classroom_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option value="" selected disabled>Pilihan Kelas</option>
                                 @foreach ($data_kelas as $data)
                                     <option value="{{$data->id}}">{{$data->class_name}}</option>
@@ -230,25 +230,25 @@
                             </select>
                         </div>
                         <div>
-                            <label for="radio" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jenis Kelamin</label>
+                            <label for="radio" class="block mb-2 text-sm font-medium text-gray-900">Jenis Kelamin</label>
                             <div class="flex items-center mb-4">
-                                <input id="laki-laki" type="radio" value="L" name="student_gender_edit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600">
-                                <label for="laki-laki" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Laki-laki</label>
+                                <input id="laki-laki" type="radio" value="L" name="student_gender_edit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                                <label for="laki-laki" class="ms-2 text-sm font-medium text-gray-900">Laki-laki</label>
                             </div>
                             <div class="flex items-center">
-                                <input id="perempuan" type="radio" value="P" name="student_gender_edit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600">
-                                <label for="perempuan" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Perempuan</label>
+                                <input id="perempuan" type="radio" value="P" name="student_gender_edit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                                <label for="perempuan" class="ms-2 text-sm font-medium text-gray-900">Perempuan</label>
                             </div>
                         </div>
                         <div>
-                            <label for="student_address_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Alamat Domisili</label>
+                            <label for="student_address_edit" class="block mb-2 text-sm font-medium text-gray-900">Alamat Domisili</label>
                             <input type="text" name="student_address_edit" id="student_address_edit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
                         </div>
                         <div>
-                            <label for="student_birthday_edit" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tanggal Lahir</label>
+                            <label for="student_birthday_edit" class="block mb-2 text-sm font-medium text-gray-900">Tanggal Lahir</label>
                             <div class="relative max-w-sm">
                                 <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                                     </svg>
                                 </div>
