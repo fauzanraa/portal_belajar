@@ -20,107 +20,128 @@
             </div>
 
             @php
-                
+                $dataUser = Auth::user();
+                $student = $dataUser->userable->name;
             @endphp
-            <div class="space-y-6">
-                @php $stepNumber = 1; @endphp
 
-                {{-- Pre-Test --}}
-                @foreach ($sessionTask->where('type', 'pretest') as $task)
-                    <div class="group relative">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
-                                {{ $stepNumber++ }}
-                            </div>
+            @if ($student == "user")
+                <div class="space-y-6">
+                    @php $stepNumber = 1; @endphp
 
-                            <div class="flex-1 bg-yellow-50 rounded-lg p-4 border-l-4 border-yellow-500 hover:shadow-md transition-all duration-300 cursor-pointer group-hover:bg-yellow-100">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-lg font-semibold text-gray-800 mb-1">Pre-Test</h4>
-                                        <p class="text-sm text-gray-600 mb-2">Uji pemahaman awal sebelum mempelajari materi</p>
-                                    </div>
-                                    <div class="flex items-center space-x-3">
-                                        @php
-                                            $studentSession = $task->studentTaskSession->where('task_session_id', $task->id)->first();
+                    {{-- Pre-Test --}}
+                    @foreach ($sessionTask->where('type', 'pretest') as $task)
+                        <div class="group relative">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
+                                    {{ $stepNumber++ }}
+                                </div>
 
-                                            $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($studentSession->task_session_id);
-                                        @endphp
+                                <div class="flex-1 bg-yellow-50 rounded-lg p-4 border-l-4 border-yellow-500 hover:shadow-md transition-all duration-300 cursor-pointer group-hover:bg-yellow-100">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-gray-800 mb-1">Pre-Test</h4>
+                                            <p class="text-sm text-gray-600 mb-2">Uji pemahaman awal sebelum mempelajari materi</p>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            @php
+                                                $studentSession = $task->studentTaskSession->where('task_session_id', $task->id)->first();
 
-                                        @if ($studentSession->status == 'finished')
-                                            <span class="px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">Selesai</span>
-
-                                            <button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed flex items-center">
-                                                <i class="bi bi-lock mr-1"></i> Terkunci
-                                            </button>
-                                        @else
-                                            <span class="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs font-medium">Belum Dikerjakan</span>
+                                                $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($studentSession->task_session_id);
+                                            @endphp
 
                                             <a href="{{ route('draw-flowchart', ['idTask' => $encryptedTask]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center startTask">
                                                 <i class="bi bi-play-fill mr-1"></i> Mulai
                                             </a>
-                                        @endif
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
 
-                {{-- Materi --}}
-                @foreach ($sessionMaterial as $material)
-                    <div class="group relative">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 w-10 h-10 {{ $isPreTestDone ? 'bg-blue-500' : 'bg-gray-400' }} rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
-                                {{ $stepNumber++ }}
-                            </div>
+                    {{-- Materi --}}
+                    @foreach ($sessionMaterial as $material)
+                        <div class="group relative">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
+                                    {{ $stepNumber++ }}
+                                </div>
 
-                            <div class="flex-1 bg-gray-50 rounded-lg p-4 border-l-4 {{ $isPreTestDone ? 'border-blue-500' : 'border-gray-500 opacity-60' }} transition-all duration-300">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-lg font-semibold text-gray-800 mb-1">Materi Pembelajaran</h4>
-                                        <p class="text-sm text-gray-600 mb-2">Pelajari materi yang tersedia</p>
-                                    </div>
-                                    <div class="flex items-center space-x-3">
-                                        @if ($isPreTestDone)
+                                <div class="flex-1 bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500 transition-all duration-300">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-gray-800 mb-1">Materi Pembelajaran</h4>
+                                            <p class="text-sm text-gray-600 mb-2">Pelajari materi yang tersedia</p>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
                                             <a href="{{asset('storage/assets/materials/' .$material->file)}}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
                                                 <i class="bi bi-book mr-1"></i> Lihat
                                             </a>
-                                        @else
-                                            <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">Terkunci</span>
-                                            <button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed flex items-center">
-                                                <i class="bi bi-lock mr-1"></i> Terkunci
-                                            </button>
-                                        @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
 
-                {{-- Post-Test --}}
-                @foreach ($sessionTask->where('type', 'posttest') as $task)
-                    <div class="group relative">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 w-10 h-10 {{ $isPreTestDone ? 'bg-purple-500' : 'bg-gray-400' }} rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
-                                {{ $stepNumber++ }}
-                            </div>
+                    {{-- Post-Test --}}
+                    @foreach ($sessionTask->where('type', 'posttest') as $task)
+                        <div class="group relative">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
+                                    {{ $stepNumber++ }}
+                                </div>
 
-                            <div class="flex-1 bg-gray-50 rounded-lg p-4 border-l-4 {{ $isPreTestDone ? 'border-purple-500' : 'border-gray-500 opacity-60' }} transition-all duration-300">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-lg font-semibold text-gray-800 mb-1">Post-Test</h4>
-                                        <p class="text-sm text-gray-600 mb-2">Evaluasi pemahaman setelah belajar</p>
+                                <div class="flex-1 bg-gray-50 rounded-lg p-4 border-l-4 border-purple-500 transition-all duration-300">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-gray-800 mb-1">Post-Test</h4>
+                                            <p class="text-sm text-gray-600 mb-2">Evaluasi pemahaman setelah belajar</p>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            @php
+                                                $studentSession = $task->studentTaskSession->where('task_session_id', $task->id)->first();
+
+                                                $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($studentSession->task_session_id);
+                                            @endphp
+
+                                            <a href="{{ route('draw-flowchart', ['idTask' => $encryptedTask]) }}" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center startTask">
+                                                <i class="bi bi-play-fill mr-1"></i> Mulai
+                                            </a>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center space-x-3">
-                                        @php
-                                            $studentSession = $task->studentTaskSession->where('task_session_id', $task->id)->first();
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
 
-                                            $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($studentSession->task_session_id);
-                                        @endphp
+                </div>
+            @else
+                <div class="space-y-6">
+                    @php $stepNumber = 1; @endphp
 
-                                        @if ($isPreTestDone)
+                    {{-- Pre-Test --}}
+                    @foreach ($sessionTask->where('type', 'pretest') as $task)
+                        <div class="group relative">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
+                                    {{ $stepNumber++ }}
+                                </div>
+
+                                <div class="flex-1 bg-yellow-50 rounded-lg p-4 border-l-4 border-yellow-500 hover:shadow-md transition-all duration-300 cursor-pointer group-hover:bg-yellow-100">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-gray-800 mb-1">Pre-Test</h4>
+                                            <p class="text-sm text-gray-600 mb-2">Uji pemahaman awal sebelum mempelajari materi</p>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            @php
+                                                $studentSession = $task->studentTaskSession->where('task_session_id', $task->id)->first();
+
+                                                $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($studentSession->task_session_id);
+                                            @endphp
+
                                             @if ($studentSession->status == 'finished')
                                                 <span class="px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">Selesai</span>
 
@@ -130,25 +151,103 @@
                                             @else
                                                 <span class="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs font-medium">Belum Dikerjakan</span>
 
-                                                <a href="{{ route('draw-flowchart', ['idTask' => $encryptedTask]) }}" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center startTask">
+                                                <a href="{{ route('draw-flowchart', ['idTask' => $encryptedTask]) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center startTask">
                                                     <i class="bi bi-play-fill mr-1"></i> Mulai
                                                 </a>
                                             @endif
-                                        @else 
-                                            <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">Terkunci</span>
 
-                                            <button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed flex items-center">
-                                                <i class="bi bi-lock mr-1"></i> Terkunci
-                                            </button>
-                                        @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
 
-            </div>
+                    {{-- Materi --}}
+                    @foreach ($sessionMaterial as $material)
+                        <div class="group relative">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 {{ $isPreTestDone ? 'bg-blue-500' : 'bg-gray-400' }} rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
+                                    {{ $stepNumber++ }}
+                                </div>
+
+                                <div class="flex-1 bg-gray-50 rounded-lg p-4 border-l-4 {{ $isPreTestDone ? 'border-blue-500' : 'border-gray-500 opacity-60' }} transition-all duration-300">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-gray-800 mb-1">Materi Pembelajaran</h4>
+                                            <p class="text-sm text-gray-600 mb-2">Pelajari materi yang tersedia</p>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            @if ($isPreTestDone)
+                                                <a href="{{asset('storage/assets/materials/' .$material->file)}}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                                                    <i class="bi bi-book mr-1"></i> Lihat
+                                                </a>
+                                            @else
+                                                <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">Terkunci</span>
+                                                <button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed flex items-center">
+                                                    <i class="bi bi-lock mr-1"></i> Terkunci
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    {{-- Post-Test --}}
+                    @foreach ($sessionTask->where('type', 'posttest') as $task)
+                        <div class="group relative">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10 {{ $isPreTestDone ? 'bg-purple-500' : 'bg-gray-400' }} rounded-full flex items-center justify-center text-white font-bold text-sm mr-4 shadow-lg">
+                                    {{ $stepNumber++ }}
+                                </div>
+
+                                <div class="flex-1 bg-gray-50 rounded-lg p-4 border-l-4 {{ $isPreTestDone ? 'border-purple-500' : 'border-gray-500 opacity-60' }} transition-all duration-300">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-gray-800 mb-1">Post-Test</h4>
+                                            <p class="text-sm text-gray-600 mb-2">Evaluasi pemahaman setelah belajar</p>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            @php
+                                                $studentSession = $task->studentTaskSession->where('task_session_id', $task->id)->first();
+
+                                                $encryptedTask = Illuminate\Support\Facades\Crypt::encrypt($studentSession->task_session_id);
+                                            @endphp
+
+                                            @if ($isPreTestDone)
+                                                @if ($studentSession->status == 'finished')
+                                                    <span class="px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">Selesai</span>
+
+                                                    <button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed flex items-center">
+                                                        <i class="bi bi-lock mr-1"></i> Terkunci
+                                                    </button>
+                                                @else
+                                                    <span class="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs font-medium">Belum Dikerjakan</span>
+
+                                                    <a href="{{ route('draw-flowchart', ['idTask' => $encryptedTask]) }}" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center startTask">
+                                                        <i class="bi bi-play-fill mr-1"></i> Mulai
+                                                    </a>
+                                                @endif
+                                            @else 
+                                                <span class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">Terkunci</span>
+
+                                                <button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed flex items-center">
+                                                    <i class="bi bi-lock mr-1"></i> Terkunci
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
+                </div>    
+            @endif
+
+
         </div>
     </div>
 @endsection

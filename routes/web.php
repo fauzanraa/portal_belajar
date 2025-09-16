@@ -100,5 +100,8 @@ Route::prefix('student')->middleware('role:siswa')->group(function () {
     Route::get('/draw/{idTask}', [StudentAnswerController::class, 'index'])->name('draw-flowchart');
     Route::post('/draw/{idTask}/store', [StudentAnswerController::class, 'store'])->name('store-flowchart');
     Route::get('/summary/{idTask}', [StudentAnswerController::class, 'summary'])->name('summary');
+    Route::get('/dummy-summary', function () {
+        return view('siswa.summary');
+    })->name('dummy-summary');
     Route::get('/scores', [StudentScoreController::class, 'index'])->name('list-scores');
 });

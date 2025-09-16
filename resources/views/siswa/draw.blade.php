@@ -1153,7 +1153,7 @@
           }
 
           myPalette =
-            $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
+            $(go.Palette, "myPaletteDiv",
               {
                 "animationManager.duration": 800, // slightly longer than default (600ms) animation
                 nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
@@ -1175,7 +1175,6 @@
 
             setupAutoSave();
 
-          // Inisialisasi progress dan load soal pertama
           setTimeout(() => {
               initializeProgress();
               loadProgressForQuestion('1');
@@ -1189,7 +1188,6 @@
 
             node.ports.each(function(port) {
                 if (show) {
-                    // Tampilkan port dengan visual yang lebih jelas
                     port.stroke = "white";
                     port.strokeWidth = 3;
                     port.fill = "rgba(255, 255, 255, 0.3)";
@@ -1333,23 +1331,18 @@
                 if (flowchartProgress[questionId] && flowchartProgress[questionId].nodeDataArray.length > 0) {
                     const progress = cleanFlowchartData(flowchartProgress[questionId]);
                     
-                    // Load model untuk soal ini
                     myDiagram.model = new go.GraphLinksModel(progress.nodeDataArray, progress.linkDataArray);
                     
-                    // PERBAIKAN: Tunggu diagram ter-render
                     myDiagram.requestUpdate();
                     
-                    // PERBAIKAN: Generate image dengan parameter yang lebih spesifik
                     const imageData = myDiagram.makeImageData({
                         scale: 1.0,
                         background: "white",
                         type: "image/png",
                     });
                     
-                    // Restore model asli
                     myDiagram.model = go.Model.fromJson(currentModelJson);
                     
-                    // PERBAIKAN: Validasi hasil image
                     if (imageData && imageData.startsWith('data:image/png;base64,')) {
                         console.log('Image generated successfully for question:', questionId);
                         return imageData;
@@ -1370,7 +1363,15 @@
             return null;
         }
 
+        var currentUserName = @json(Auth::user()->userable->name);
+
         function saveFlowchartToDatabase() {
+            if (currentUserName == 'user') {
+                const redirectUrl = '{{ route("dummy-summary") }}';
+                window.location.href = redirectUrl;
+                return;
+            }
+
             saveCurrentProgress();
 
             const isAutoSave = !event || !event.target;
@@ -1386,10 +1387,9 @@
                 
                 allAnswers.push({
                     question_id: {{ $data->id }},
-                    flowchart_data: JSON.stringify(cleanedData) // Gunakan data yang sudah dibersihkan
+                    flowchart_data: JSON.stringify(cleanedData) 
                 });
 
-                // Generate image hanya jika ada data
                 let imageData = null;
                 if (cleanedData.nodeDataArray.length > 0) {
                     imageData = generateFlowchartImageForQuestion('{{ $questionIndex }}');
@@ -1401,7 +1401,6 @@
                 });
             } catch (e) {
                 console.error('Error processing question {{ $questionIndex }}:', e);
-                // Fallback dengan data kosong
                 allAnswers.push({
                     question_id: {{ $data->id }},
                     flowchart_data: JSON.stringify({ nodeDataArray: [], linkDataArray: [] })
@@ -1414,26 +1413,6 @@
                 @php $questionIndex++; @endphp
             @endforeach
             
-            // if (allAnswers.length === 0) {
-            //     showErrorMessage('Tidak ada jawaban untuk disimpan!');
-            //     return;
-            // }
-
-            // let flowchartImage = null;
-            // if (myDiagram && myDiagram.model.nodeDataArray.length > 0) {
-            //     try {
-            //         flowchartImage = myDiagram.makeImageData({
-            //             scale: 1,
-            //             background: "white",
-            //             type: "image/png",
-            //             details: 1.0
-            //         });
-            //     } catch (error) {
-            //         console.error('Error generating flowchart image:', error);
-            //     }
-            // }
-            
-            // Update button state
             let saveButton, originalText;
             if (!isAutoSave && event.target) {
                 saveButton = event.target;
@@ -1446,7 +1425,6 @@
             let remainingTime = localStorage.getItem('timer_{{$sessionTask->id}}_{{$studentId}}');
             let duration = totalDuration - remainingTime;  
             
-            // Siapkan data untuk dikirim
             const requestData = {
                 question_id: allAnswers,
                 duration: duration,
@@ -1455,7 +1433,6 @@
                 flowchart_images: allImages ?? null
             };
 
-            // Kirim ke server
             fetch('{{ route("store-flowchart", $sessionTask->id) }}', {
                 method: 'POST',
                 headers: {

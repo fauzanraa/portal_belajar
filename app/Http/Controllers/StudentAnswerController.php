@@ -114,29 +114,13 @@ class StudentAnswerController extends Controller
                     if (empty($studentAnswerData['nodeDataArray']) && empty($studentAnswerData['linkDataArray'])) {
                         $score = 0;
                     } else {
-                        // try {
-                        //     [$score, $correctElements, $totalElements] = $this->evaluateFlowchartWithAI($correctAnswerData, $studentAnswerData);
-                        // } catch (\Exception $e) {
-                        //     // fallback jika AI gagal
-                        //     Log::error("Evaluasi AI bermasalah: ".$e->getMessage());
-                        //     $score = 0;
-                        //     $correctElements = 0;
-                        //     $totalElements = count($correctAnswerData['nodeDataArray'] ?? []) + count($correctAnswerData['linkDataArray'] ?? []);
-                        // }
-
                         [$correctElements, $totalElements] = $this->evaluateFlowchartAnswer($correctAnswerData, $studentAnswerData);
                         $totalCorrectElements += $correctElements;
                         $totalExpectedElements += $totalElements;
                         $score = $totalElements > 0 ? ($correctElements / $totalElements) * 100 : 0;
                     }
-
-                    // $totalCorrectElements += $correctElements;
-                    // $totalExpectedElements += $totalElements;
                     $totalScore += $score;
                     $questionCount++;
-
-                    // $totalScore += $score;
-                    // $questionCount++;
                 }
             }
 
@@ -364,8 +348,10 @@ class StudentAnswerController extends Controller
             } elseif ($postScore < $preScore) {
                 $diff = number_format($preScore - $postScore, 2);
                 $evaluation = "Nilai kamu turun {$diff} poin. Coba review kembali materi dan diskusikan dengan guru atau teman ya!";
-            } else {
+            } elseif ($postScore = $preScore && $postScore < 60) {
                 $evaluation = "Yuk, tingkatkan pemahamanmu untuk hasil yang lebih baik!";
+            } else {
+                $evaluation = "Hasil yang kamu dapatkan sudah baik, terus tingkatkan hasilmu!";
             }
         } else {
             $evaluation = "Data pretest atau posttest belum lengkap untuk dievaluasi.";

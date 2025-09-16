@@ -123,8 +123,10 @@ class ManageProgressController extends Controller
                 }
             } elseif ($postScore < $preScore) {
                 $evaluation = "Siswa mengalami penurunan skor. Disarankan guru mengecek kembali bagian yang belum dipahami siswa.";
-            } elseif ($postScore = $preScore) {
+            } elseif ($postScore = $preScore && $postScore < 60) {
                 $evaluation = "Siswa mungkin membutuhkan pendekatan belajar yang lain untuk memperdalam materi.";
+            } else {
+                $evaluation = "Siswa mendapatkan hasil yang bagus, terus pantau hasil belajar siswa untuk menjaga performanya";
             }
         } else {
             $evaluation = "Data pretest atau posttest belum lengkap untuk dievaluasi.";
