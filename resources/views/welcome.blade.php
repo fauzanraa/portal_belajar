@@ -120,7 +120,7 @@
             </nav>
 
             <!-- Hero Section -->
-            <section class="min-h-screen py-20">
+            <section class="min-h-fit py-5">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="max-w-4xl mx-auto text-center">
                         <!-- Hook Statement -->
@@ -132,7 +132,7 @@
                             Dari pemula hingga mahir, pelajari teknik profesional membuat flowchart yang efektif dan mudah dipahami
                         </p> --}}
                         
-                        <p class="text-base md:text-lg text-slate-300 mb-12 fade-in-up fade-in-up-delay-2">
+                        <p class="text-base md:text-lg text-slate-300 mb-8 md:mb-12 fade-in-up fade-in-up-delay-2">
                             ✨ Pahami konsep dasar untuk mempermudah proses pembelajaran!
                         </p>
 
@@ -165,7 +165,7 @@
                         </div>
 
                         <!-- CTA Buttons -->
-                        <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center fade-in-up fade-in-up-delay-4">
+                        <div class="my-12 flex flex-col sm:flex-row gap-4 justify-center items-center fade-in-up fade-in-up-delay-4">
                             <button class="w-full sm:w-auto px-8 py-4 bg-white text-sky-500 rounded-lg font-semibold text-lg hover:bg-sky-700 hover:text-white transition shadow-lg cursor-pointer" onclick="window.location.href='{{ route('login') }}'">
                                 🚀 Mulai Belajar Sekarang
                             </button>

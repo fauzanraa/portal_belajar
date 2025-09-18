@@ -21,14 +21,14 @@
     </div>
 
     <div class="mt-10 bg-white p-5 pl-8 rounded-l-xl">
-        <div class="button mt-5 flex gap-4 justify-self-end">
-            <button data-modal-target="add-material-modal" data-modal-toggle="add-material-modal" class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer @if ($pretest->Empty() && $data_pertemuan->type != 'modul') button-disabled @endif" @if ($pretest->Empty() && $data_pertemuan->type != 'modul') disabled @endif>
+        <div class="button mt-5 flex gap-4 justify-center md:justify-self-end">
+            <button data-modal-target="add-material-modal" data-modal-toggle="add-material-modal" class="px-2 md:px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer @if ($pretest->Empty() && $data_pertemuan->type != 'modul') button-disabled @endif" @if ($pretest->Empty() && $data_pertemuan->type != 'modul') disabled @endif>
                 <i class="bi bi-plus"></i> Tambah materi
             </button>
             <button 
                 data-modal-target="add-task-modal" 
                 data-modal-toggle="add-task-modal" 
-                class="px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer @if ($pretest->isNotEmpty() && $posttest->isNotEmpty()) button-disabled @endif" 
+                class="px-2 md:px-5 py-2.5 text-sm rounded-lg bg-sky-500 text-sm hover:bg-sky-700 text-white cursor-pointer @if ($pretest->isNotEmpty() && $posttest->isNotEmpty()) button-disabled @endif" 
                 @if ($pretest->isNotEmpty() && $posttest->isNotEmpty()) disabled @endif>
                 <i class="bi bi-plus"></i> Tambah tugas
             </button>
@@ -43,10 +43,10 @@
                         @endphp
                         <a href="{{route('detail-materials', $encryptedMeeting)}}" class="flex bg-white border border-gray-200 rounded-lg shadow-sm w-full hover:bg-sky-500 hover:scale-101 transition-all group">
                             <div class="flex-none w-1/4 flex items-center justify-center p-4 border-r border-gray-100 group-hover:border-white">
-                                <i class="bi bi-file-earmark text-7xl group-hover:text-white"></i>
+                                <i class="bi bi-file-earmark text-4xl md:text-7xl group-hover:text-white"></i>
                             </div>
                             <div class="flex-1 flex flex-col justify-center p-4 leading-normal">
-                                <h5 class="mb-5 text-2xl font-bold tracking-tight text-gray-900 group-hover:text-white">{{$data->name}}</h5>
+                                <h5 class="mb-5 text-l md:text-2xl font-bold tracking-tight text-gray-900 group-hover:text-white">{{$data->name}}</h5>
                                 <p class="mb-3 text-xs font-normal text-slate-500 group-hover:text-white">Lihat selengkapnya <i class="bi bi-caret-right"></i></p>
                             </div>
                         </a>
@@ -61,10 +61,10 @@
                         @endphp
                         <a href="{{route('detail-tasks', ['id' => $encryptedTask])}}" class="flex mt-5 bg-white border border-gray-200 rounded-lg shadow-sm w-full hover:bg-sky-500 hover:scale-101 transition-all group">
                             <div class="flex-none w-1/4 flex items-center justify-center p-4 border-r border-gray-100 group-hover:border-white">
-                                <i class="bi bi-clipboard text-7xl group-hover:text-white"></i>
+                                <i class="bi bi-clipboard text-4xl md:text-7xl group-hover:text-white"></i>
                             </div>
                             <div class="flex-1 flex flex-col justify-center p-4 leading-normal">
-                                <h5 class="text-2xl font-bold tracking-tight text-gray-900 group-hover:text-white">{{$data->name}}</h5>
+                                <h5 class="text-l md:text-2xl font-bold tracking-tight text-gray-900 group-hover:text-white">{{$data->name}}</h5>
                                 @if ($data->type == 'pretest')
                                     <p class="mb-5 text-xs text-slate-300">Tipe : Pre-test</p>
                                 @else

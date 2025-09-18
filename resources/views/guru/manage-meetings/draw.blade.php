@@ -85,6 +85,97 @@
         </div>
     </div>
 
+    {{-- <div x-data="{ showPalette: false }" class="container mx-auto px-4 py-8 min-h-screen relative">
+
+        <div class="w-full mb-6">
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <div class="flex items-center mb-4">
+                    <i class="bi bi-grid-3x3-gap-fill text-3xl text-blue-500 mr-3"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">Soal</h2>
+                </div>
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <p class="text-gray-700 leading-relaxed">{{ $data_soal->question }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full mb-6">
+            <div class="bg-white rounded-xl shadow-lg p-4 border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <i class="bi bi-pencil-square text-xl text-green-500 mr-2"></i>
+                    <h2 class="text-lg font-semibold text-gray-700">Area Gambar Flowchart</h2>
+                </div>
+                <div id="myDiagramDiv" class="border-2 border-dashed border-gray-300 rounded-lg h-[520px] bg-gradient-to-br from-gray-50 to-white hover:border-green-300 transition-colors duration-300 relative overflow-hidden">
+                    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button onclick="window.location.href='{{ route('detail-tasks', ['id' => $encryptedTask]) }}'" class="group relative overflow-hidden bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <div class="flex items-center justify-center">
+                        <i class="bi bi-arrow-left text-lg mr-2"></i>
+                        <span>Kembali</span>
+                    </div>
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                </button>
+
+                <button onclick="event.preventDefault(); showConfirmation(saveFlowchartToDatabase)" class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <div class="flex items-center justify-center">
+                        <i class="bi bi-floppy-fill mr-2"></i>
+                        <span>Simpan</span>
+                    </div>
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                </button>
+            </div>
+        </div>
+
+        <div class="hidden mt-8">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Model JSON:</h3>
+            <textarea id="mySavedModel" class="w-full h-64 p-2 border border-gray-300 rounded-md bg-gray-50">
+                { 
+                    "nodeDataArray": [],
+                    "linkDataArray": []
+                }
+            </textarea>
+        </div>
+
+        <div class="fixed bottom-6 right-6 z-50">
+            <button
+                @click="showPalette = true"
+                class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+            >
+                <i class="bi bi-tools text-xl"></i>
+            </button>
+        </div>
+
+        <div
+            x-show="showPalette"
+            x-transition:enter="transition transform duration-300"
+            x-transition:enter-start="translate-y-full"
+            x-transition:enter-end="translate-y-0"
+            x-transition:leave="transition transform duration-300"
+            x-transition:leave-start="translate-y-0"
+            x-transition:leave-end="translate-y-full"
+            class="fixed inset-x-0 bottom-0 z-50 bg-white border-t border-gray-200 shadow-xl rounded-t-xl p-4"
+            style="max-height: 60vh; overflow-y: auto"
+            x-cloak
+        >
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-semibold text-gray-700">Komponen Flowchart</h3>
+                <button @click="showPalette = false" class="text-gray-500 hover:text-red-500 text-2xl leading-none">×</button>
+            </div>
+
+            <div
+                id="myPaletteDiv"
+                class="grid grid-cols-3 sm:grid-cols-4 gap-4 border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50"
+                style="min-height: 300px;"
+            >
+            </div>
+        </div>
+    </div> --}}
+
     <style>
         @keyframes pulse-border {
             0%, 100% { border-color: #e5e7eb; }

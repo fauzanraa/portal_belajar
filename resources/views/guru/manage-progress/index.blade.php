@@ -78,7 +78,7 @@
                                     
                                     <!-- Student Info -->
                                     <div class="flex-1">
-                                        <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                        <h3 class="text-sm md:text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                                             {{$data->name}}
                                         </h3>
                                         <p class="text-sm text-gray-600 mt-1">
@@ -103,33 +103,59 @@
                                 </div>
                                 
                                 <!-- Progress Section -->
-                                <div class="flex items-center space-x-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-start gap-4 sm:gap-6 mt-4">
+                                    {{-- Tombol Detail --}}
                                     @php 
                                         $encryptedStudent = Illuminate\Support\Facades\Crypt::encrypt($data->student_id);
                                     @endphp
-                                    <button onclick="window.location.href='{{route('detail-progress', $encryptedStudent)}}'" class="detail-btn px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                                    <button 
+                                        onclick="window.location.href='{{ route('detail-progress', $encryptedStudent) }}'" 
+                                        class="detail-btn px-4 py-2 text-xm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium 
+                                            opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 
+                                            transition-all duration-300 w-full sm:w-auto text-center"
+                                    >
                                         <i class="bi bi-eye mr-1"></i>
                                         Detail
                                     </button> 
 
-                                    <div class="relative">
-                                        <div class="w-16 h-16">
-                                            <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                                                <path class="text-gray-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-                                                <path class="@if ($persentase_pengerjaan[$data->student_id] >= 0 && $persentase_pengerjaan[$data->student_id] <= 35) text-red-500
-                                                    @elseif ($persentase_pengerjaan[$data->student_id] >= 36 && $persentase_pengerjaan[$data->student_id] <= 70) text-yellow-500
-                                                    @else text-green-500
-                                                    @endif" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="{{$persentase_pengerjaan[$data->student_id]}}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                    {{-- Progress Circle --}}
+                                    <div class="relative mx-auto sm:mx-0">
+                                        <div class="w-20 h-20">
+                                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                                <path 
+                                                    class="text-gray-200" 
+                                                    stroke="currentColor" 
+                                                    stroke-width="3" 
+                                                    fill="none" 
+                                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 
+                                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                ></path>
+                                                <path 
+                                                    class="@if ($persentase_pengerjaan[$data->student_id] <= 35) text-red-500
+                                                        @elseif ($persentase_pengerjaan[$data->student_id] <= 70) text-yellow-500
+                                                        @else text-green-500
+                                                        @endif" 
+                                                    stroke="currentColor" 
+                                                    stroke-width="3" 
+                                                    fill="none" 
+                                                    stroke-dasharray="{{ $persentase_pengerjaan[$data->student_id] }}, 100" 
+                                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 
+                                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                ></path>
                                             </svg>
                                             <div class="absolute inset-0 flex items-center justify-center">
-                                                <span class="text-lg font-bold @if ($persentase_pengerjaan[$data->student_id] >= 0 && $persentase_pengerjaan[$data->student_id] <= 35) text-red-500
-                                                    @elseif ($persentase_pengerjaan[$data->student_id] >= 36 && $persentase_pengerjaan[$data->student_id] <= 70) text-yellow-500
+                                                <span class="text-lg font-bold 
+                                                    @if ($persentase_pengerjaan[$data->student_id] <= 35) text-red-500
+                                                    @elseif ($persentase_pengerjaan[$data->student_id] <= 70) text-yellow-500
                                                     @else text-green-500
-                                                    @endif">{{$persentase_pengerjaan[$data->student_id]}}%</span>
+                                                    @endif">
+                                                    {{ $persentase_pengerjaan[$data->student_id] }}%
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                             
                             <!-- Progress Details (Expandable) -->

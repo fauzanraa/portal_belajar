@@ -31,8 +31,8 @@
                 });
             </script>
         @endif
-        <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
-            <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
+        <div class="flex items-center justify-center w-full min-h-screen bg-gray-50 px-4">
+            <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row lg:items-stretch lg:min-h-[500px]">
                 <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
                     <h1 class="text-2xl font-medium">Selamat <span class="text-sky-500">Datang</span></h1>
                     <p class="mb-6 text-gray-700">Masuk dan lanjutkan eksplorasi anda.</p>
@@ -62,7 +62,7 @@
                         </div>
                     </form>
                 </div>
-                <div class="relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
+                <div class="relative hidden lg:block lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
                     <div class="w-full h-full flex items-center justify-center">
                         <!-- Replace this comment with your image tag once you have the image -->
                         <img src="{{asset('img/bg-login.jpg')}}" alt="Login Image" class="w-full h-full">

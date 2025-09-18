@@ -23,19 +23,49 @@
         <link rel="stylesheet" href="{{asset("select2/css/select2.min.css")}}"/>
 
         @yield('style')
+
+        <script src="//unpkg.com/alpinejs" defer></script>
     </head>
 </head>
 <body class="bg-slate-50 font-fira" @yield('onload')>
     @include('sweetalert2::index')
-    <div class="flex">
-        <div class="w-[22%]">
+    <div x-data="{ sidebarOpen: false }" class="flex min-h-screen relative">
+
+        <!-- Sidebar -->
+        <div
+            x-show="sidebarOpen || window.innerWidth >= 1024"
+            class="fixed top-0 left-0 z-40 w-[300px] h-full bg-white shadow-md overflow-auto transform transition-transform duration-300 ease-in-out lg:relative lg:w-[22%]"
+            x-cloak
+        >
+            <!-- Close button (mobile only) -->
+            <div class="flex justify-end p-4 lg:hidden">
+                <button @click="sidebarOpen = false" class="text-2xl text-black hover:text-black">✕</button>
+            </div>
+
             @include('layout-admins.sidebar')
         </div>
-        
-        <div class="w-[78%] ml-5">
+
+        <!-- Overlay (mobile only) -->
+        <div
+            x-show="sidebarOpen"
+            @click="sidebarOpen = false"
+            class="fixed inset-0 bg-black opacity-30 z-30 lg:hidden"
+            x-cloak
+        ></div>
+
+        <!-- Main Content -->
+        <div class="flex-1 w-full p-4 lg:ml-5 lg:w-[78%]">
+            <!-- Menu Button (mobile only) -->
+            <div class="lg:hidden mb-4">
+                <button @click="sidebarOpen = true" class="bg-white px-4 py-2 mb-4 rounded shadow">
+                    ☰ Menu
+                </button>
+            </div>
+
             @yield('content')
         </div>
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>

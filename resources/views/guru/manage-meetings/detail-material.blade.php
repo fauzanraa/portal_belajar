@@ -43,7 +43,7 @@
                             <td class="px-6 py-4 border-y border-gray-200 border-r border-gray-200">
                                 @if ($data_materi->file == true)
                                     <a href="{{asset('storage/assets/materials/'.$data_materi->file)}}" target="_blank">
-                                        <i class="bi bi-file-earmark-pdf-fill text-red-500"></i><span class="ml-3">{{$data_materi->file}}</span>
+                                        <i class="bi bi-file-earmark-pdf-fill text-red-500"></i><span class="md:ml-3">{{$data_materi->file}}</span>
                                     </a>
                                 @else
                                     </i><span>Tidak ada file</span>

@@ -40,7 +40,7 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <h4 class="text-lg font-semibold text-gray-800 mb-1">Pre-Test</h4>
-                                            <p class="text-sm text-gray-600 mb-2">Uji pemahaman awal sebelum mempelajari materi</p>
+                                            <p class="text-xs md:text-sm text-gray-600 mb-2">Uji pemahaman awal sebelum mempelajari materi</p>
                                         </div>
                                         <div class="flex items-center space-x-3">
                                             @php
@@ -72,7 +72,7 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <h4 class="text-lg font-semibold text-gray-800 mb-1">Materi Pembelajaran</h4>
-                                            <p class="text-sm text-gray-600 mb-2">Pelajari materi yang tersedia</p>
+                                            <p class="text-xs md:text-sm text-gray-600 mb-2">Pelajari materi yang tersedia</p>
                                         </div>
                                         <div class="flex items-center space-x-3">
                                             <a href="{{asset('storage/assets/materials/' .$material->file)}}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
@@ -97,7 +97,7 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <h4 class="text-lg font-semibold text-gray-800 mb-1">Post-Test</h4>
-                                            <p class="text-sm text-gray-600 mb-2">Evaluasi pemahaman setelah belajar</p>
+                                            <p class="text-xs md:text-sm text-gray-600 mb-2">Evaluasi pemahaman setelah belajar</p>
                                         </div>
                                         <div class="flex items-center space-x-3">
                                             @php

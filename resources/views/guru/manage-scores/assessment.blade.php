@@ -49,7 +49,7 @@
 
         <form id="assessment" action="{{route('store-assessments', ['idModul' => $idModul, 'idSession' => $encryptedSession])}}" class="space-y-6" method="POST">
             @csrf
-            <div class="bg-white p-6 rounded-lg shadow-md border border-sky-100">
+            <div class="bg-white mt-5 p-6 rounded-lg shadow-md border border-sky-100">
                 <h3 class="text-lg font-semibold text-sky-600 mb-4 border-b pb-2">📝 Data Nilai</h3>
 
                 <input type="text" value="{{$sessionSiswa->id}}" name="student_session" hidden>
@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <div class="flex justify-end space-x-4 pt-6">
+            <div class="flex justify-center md:justify-end space-x-4 pt-6">
                 <a href="{{ route('detail-moduls', $idModul) }}"
                     class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-sky-100 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors duration-200">
                     <i class="bi bi-arrow-left mr-2"></i> Kembali

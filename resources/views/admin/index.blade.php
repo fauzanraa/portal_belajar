@@ -9,8 +9,8 @@
     <div class="w-full">
         <div class="mt-10">
             <div class="p-5 px-8 rounded-l-2xl bg-white relative group min-h-[200px]">
-                <p class="font-bold text-4xl">Halo, Admin!</p>
-                <img src="{{asset('img/avatar-user-male.png')}}" alt="" class="absolute right-0 bottom-0 w-60 h-60 transform  -translate-x-5 translate-y-1">
+                <p class="font-bold text-2xl lg:text-4xl">Halo, Admin!</p>
+                <img src="{{asset('img/avatar-user-male.png')}}" alt="" class="absolute right-0 bottom-0 w-40 h-40 md:w-48 md:h-48 lg:w-64 lg:h-64 translate-x-2 translate-y-1">
             </div>
         </div>
     </div>

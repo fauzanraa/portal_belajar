@@ -45,7 +45,7 @@
 
                                 <div class="flex-1">
                                     <h3
-                                        class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                        class="text=xs md:text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                                         Modul 1 : Pengenalan Pemrograman dan Flowchart
                                         {{-- {{ $completed->title }} : {{ $completed->description }} --}}
                                     </h3>
@@ -74,7 +74,7 @@
                             <div class="flex items-center space-x-6">
                                 <button
                                     onclick="window.location.href='{{ route('dummy-summary') }}'"
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-3 md:group-hover:translate-x-0 transition-all duration-300">
                                     <i class="bi bi-eye mr-1"></i>
                                     Detail
                                 </button>

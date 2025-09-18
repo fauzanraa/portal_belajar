@@ -9,12 +9,12 @@
     <div class="w-full">
         <div class="mt-10">
             <div class="p-5 px-8 rounded-2xl bg-white relative group min-h-[200px]">
-                <p class="font-bold text-4xl">Halo, {{$user->userable->name}}!</p>
+                <p class="font-bold text-2xl md:text-4xl">Halo, {{$user->userable->name}}!</p>
                 <p class="text-slate-300 text-xs mt-2">Ayo lanjutkan pekerjaanmu 😃</p>
                 @if ($student->gender == 'L')
-                    <img src="{{asset('img/avatar-user-male.png')}}" alt="" class="absolute right-0 bottom-0 w-60 h-60 transform  -translate-x-5 translate-y-1">
+                    <img src="{{asset('img/avatar-user-male.png')}}" alt="" class="absolute right-0 bottom-0 w-40 h-40 md:w-48 md:h-48 lg:w-64 lg:h-64 translate-x-2 translate-y-1">
                 @else
-                    <img src="{{asset('img/avatar-user-female.png')}}" alt="" class="absolute right-0 bottom-0 w-60 h-60 transform  -translate-x-5 translate-y-1">
+                    <img src="{{asset('img/avatar-user-female.png')}}" alt="" class="absolute right-0 bottom-0 w-40 h-40 md:w-48 md:h-48 lg:w-64 lg:h-64 translate-x-2 translate-y-1">
                 @endif
             </div>
         </div>
